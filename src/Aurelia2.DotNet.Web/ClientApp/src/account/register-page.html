@@ -1,0 +1,23 @@
+<template>
+    <div class="container">
+        <div class="mt-5 bg-body-secondary position-relative p-5 text-muted bg-body border border-dashed rounded-5">
+            <form class="form-horizontal" submit.trigger="register()">
+                <div class="form-floating mb-3">
+                    <input id="email" class="form-control" aria-required="true" autocomplete="on" type="email" placeholder="name@example.com" value.bind="registerViewModel.email">
+                    <label for="email">Email address</label>
+                </div>
+                <div class="form-floating mb-3">
+                    <input id="password" class="form-control" aria-required="true" placeholder="Password" type="password" value.bind="registerViewModel.password">
+                    <label for="password">Password</label>
+                </div>
+                <div class="form-floating mb-3">
+                    <input id="confirm-password" class="form-control" aria-required="true" placeholder="Confirm Password" type="password" value.bind="registerViewModel.confirmPassword">
+                    <label for="confirm-password">Confirm Password</label>
+                </div>
+                <div class="mb-2">
+                    <button type="submit" class="w-50 btn btn-lg btn-primary">Register</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</template>

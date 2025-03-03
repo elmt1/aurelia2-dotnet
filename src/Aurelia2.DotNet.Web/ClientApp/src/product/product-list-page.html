@@ -1,0 +1,10 @@
+<template>
+    <div class="container">
+        <h1>Product List</h1>
+        <ul>
+            <li repeat.for="product of products">
+                <strong>${product.name}</strong>: $${product.price}
+            </li>
+        </ul>
+    </div>
+</template>

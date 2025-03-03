@@ -1,0 +1,14 @@
+<template>
+    <div class="container">
+        <div class="mt-5 bg-body-secondary position-relative p-5 text-muted bg-body border border-dashed rounded-5">
+            <form class="form-horizontal" submit.trigger="logIn()">
+                <p if.bind="error === true">Email confirmation failed.</p>
+                <p if.bind="error === false && confirmed === false">Your email is being confirmed.</p>
+                <p if.bind="error === false && confirmed === true">Your email has been confirmed, you can log in.</p>
+                <div class="mb-2" if.bind="confirmed === true">
+                    <button type="submit" class="w-50 btn btn-lg btn-primary">Log in</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</template>

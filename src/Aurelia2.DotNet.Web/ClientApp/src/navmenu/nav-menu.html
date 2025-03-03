@@ -1,0 +1,51 @@
+﻿<template>
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <a class="navbar-brand" href="#/home">
+            <img src="logo.svg" alt="Logo" class="d-inline-block align-top" />
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto">
+                <template repeat.for="menuItem of menuDefinition">
+                    <template if.bind="!menuItem.children || menuItem.children.length === 0">
+                        <li class="nav-item">
+                            <a href.bind="menuItem.route.path" class="nav-link" active.class="menuItem.route.isActive">
+                                <i class="${menuItem.icon}"></i>&nbsp;&nbsp;${menuItem.title || menuItem.route.title}
+                            </a>
+                        </li>
+                    </template>
+                    <template if.bind="menuItem.children && menuItem.children.length > 0">
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="${menuItem.icon}"></i>&nbsp;&nbsp;${menuItem.title}
+                            </a>
+                            <ul class="dropdown-menu">
+                                <template repeat.for="child of menuItem.children">
+                                    <li>
+                                        <a href.bind="child.route.path" class="dropdown-item">
+                                            <i class="${child.icon}"></i>&nbsp;&nbsp;${child.title || child.route.title}
+                                        </a>
+                                    </li>
+                                </template>
+                            </ul>
+                        </li>
+                    </template>
+                </template>
+            </ul>
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item" if.bind="!authState.isAuthenticated">
+                    <a class="nav-link" active.class="route.isActive" load="login">
+                        <i class="fas fa-right-to-bracket"></i> Login
+                    </a>
+                </li>
+                <li class="nav-item" if.bind="authState.isAuthenticated">
+                    <a class="nav-link" click.trigger="logout()">
+                        <i class="fas fa-right-from-bracket"></i> Logout
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+</template>

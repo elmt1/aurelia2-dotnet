@@ -1,0 +1,47 @@
+{
+  "name": "my-vite-project",
+  "description": "An Aurelia 2 client application.",
+  "version": "0.1.1",
+  "scripts": {
+    "prestart": "node ./aspnetcore-https.js",
+    "start": "copyfiles -u 1 public/index.html ./ && node replace-tags.js && vite",
+    "dev": "copyfiles -u 1 public/index.html ./ && node replace-tags.js && vite",
+    "build": "vite build",
+    "serve": "vite preview"
+  },
+  "repository": {
+    "type": "git",
+    "url": "???"
+  },
+  "license": "UNLICENSED",
+  "dependencies": {
+    "@aurelia/router-lite": "latest",
+    "@fortawesome/fontawesome-free": "^6.7.2",
+    "@popperjs/core": "^2.11.8",
+    "aurelia": "latest",
+    "bootstrap": "^5.3.3"
+  },
+  "devDependencies": {
+    "@aurelia/testing": "latest",
+    "@aurelia/vite-plugin": "latest",
+    "@types/node": "^22.10.2",
+    "copyfiles": "^2.4.1",
+    "eslint": "^9.17.0",
+    "globals": "^15.14.0",
+    "sass": "^1.83.0",
+    "stylelint": "^16.12.0",
+    "stylelint-config-standard-scss": "^14.0.0",
+    "tslib": "^2.8.1",
+    "typescript": "^5.7.3",
+    "typescript-eslint": "^8.18.1",
+    "vite": "^6.1.1",
+    "vite-plugin-html": "^3.2.2",
+    "vite-plugin-node-polyfills": "^0.23.0"
+  },
+  "type": "module",
+  "overrides": {
+    "vite-plugin-node-polyfills": {
+      "vite": "^6.1.1"
+    }
+  }
+}

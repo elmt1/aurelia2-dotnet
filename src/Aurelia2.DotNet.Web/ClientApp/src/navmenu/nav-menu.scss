@@ -1,0 +1,36 @@
+﻿$navbar-dark-color: rgba(#FFFFFF, .75);
+$navbar-dark-hover-color: rgba(#FFFFFF, .90);
+$navbar-dark-active-color: #FFFFFF;
+$navbar-dark-disabled-color: rgba(#FFFFFF, .30);
+
+.nav-link {
+    font-size: var(--bs-nav-link-font-size, calc(1rem + .2vw));
+}
+
+nav {
+    background: #444;
+    display: flex;
+}
+
+a {
+    padding: 10px;
+    text-decoration: none;
+    color: black;
+
+    &:hover {
+        background-color: #888;
+    }
+}
+
+.active {
+    background-color: #666;
+}
+
+.navbar-brand img {
+    height: 50px;
+    width: auto;
+    display: block;
+    background-color: #fff; /* Add a light background */
+    padding: 5px; /* Add some padding */
+    border-radius: 5px; /* Optional: Add rounded corners */
+}

@@ -1,0 +1,31 @@
+<template>
+    <div class="container">
+        <div class="mt-5 bg-body-secondary position-relative p-5 text-muted bg-body border border-dashed rounded-5">
+            <form class="form-horizontal" submit.trigger="login()">
+                <div class="form-floating mb-3">
+                    <input id="email" class="form-control" aria-required="true" autocomplete="on" type="email" placeholder="name@example.com" value.bind="loginViewModel.email">
+                    <label for="email">Email address</label>
+                </div>
+                <div class="form-floating mb-3">
+                    <input id="password" class="form-control" aria-required="true" type="password" placeholder="password" value.bind="loginViewModel.password">
+                    <label for="password">Password</label>
+                </div>
+                <div class="checkbox mb-3">
+                    <label for="remember-me">
+                        <input style="transform: scale(1.5); margin-left: .2rem;" type="checkbox" id="remember-me" value="true" value.bind="loginViewModel.rememberMe">
+                        &nbsp;Remember me?
+                    </label>
+                </div>
+                <div class="mb-2">
+                    <button type="submit" class="w-50 btn btn-lg btn-primary">Log in</button>
+                </div>
+                <div class="mb-2">
+                    <a href="../reset-password">Forgot your password?</a>
+                </div>
+                <div class="mb-1">
+                    <a href="../register">Register as a new user?</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</template>
