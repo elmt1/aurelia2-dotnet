@@ -1,9 +1,11 @@
-﻿using Aurelia2.DotNet.Web.Models;
+﻿using Aurelia2.DotNet.Web.Data;
+using Aurelia2.DotNet.Web.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using System.Text;
 using System.Text.Encodings.Web;
@@ -14,6 +16,7 @@ namespace Aurelia2.DotNet.Web.Controllers
     [ApiController]
     public class AccountController : ControllerBase
     {
+        private readonly ApplicationDbContext context;
         private readonly SignInManager<IdentityUser> signInManager;
         private readonly UserManager<IdentityUser> userManager;
         private readonly IUserStore<IdentityUser> userStore;
@@ -23,18 +26,36 @@ namespace Aurelia2.DotNet.Web.Controllers
 
 
         public AccountController(
+            ApplicationDbContext context,
             UserManager<IdentityUser> userManager,
             IUserStore<IdentityUser> userStore,
             SignInManager<IdentityUser> signInManager,
             ILogger<AccountController> logger,
             IEmailSender emailSender)
         {
+            this.context = context;
             this.userManager = userManager;
             this.userStore = userStore;
             emailStore = GetEmailStore();
             this.signInManager = signInManager;
             this.logger = logger;
             this.emailSender = emailSender;
+        }
+
+        /// <summary>Runs the migrations, this is ONLY FOR TESTING.</summary>
+        [HttpGet("CreateUserDatabase")]
+        [AllowAnonymous]
+        public IActionResult CreateUserDatabase()
+        {
+            try
+            {
+                context.Database.Migrate();
+                return Ok("Database migrations applied successfully.");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occurred while applying migrations: {ex.Message}");
+            }
         }
 
         [HttpGet("IsAuthenticated")]
@@ -60,6 +81,7 @@ namespace Aurelia2.DotNet.Web.Controllers
                 }
                 if (result.IsLockedOut)
                 {
+                    var user = await userManager.FindByEmailAsync(model.Email);
                     var message = "User: " + model.Email + " is locked out.";
                     logger.LogWarning(message);
                     return BadRequest(new string[] { message });

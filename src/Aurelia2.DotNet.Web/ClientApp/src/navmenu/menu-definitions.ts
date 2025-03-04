@@ -33,6 +33,10 @@ export const menuDefinitions: MenuDefinition[] = [
                 icon: 'fas fa-unlock'
             },
             {
+                routeId: 'create-user-database',
+                icon: 'fas fa-person-digging'
+            },
+            {
                 routeId: 'about',
                 icon: 'fas fa-circle-info'
             }

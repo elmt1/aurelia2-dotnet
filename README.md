@@ -19,6 +19,11 @@
 
 ## Project-Specific Configuration
 
+### Aurelia View Configuration
+
+The routes and menus are defined in routes.ts and menu-definitions.ts. The nav-menu element will build a 
+two-level bootstrap navigation menu using those definitions.
+
 ### `vite.config.ts`
 
 Configures Vite for the Aurelia 2 application
@@ -40,14 +45,11 @@ and update the connection string in `appsettings.json`.
 
 ### Run Database Migrations
 
-If necessary, run the following code to apply migrations:
+You can create the user database while running the application using the Create User Database page available 
+from the configuration dropdown menu. That will run migrations from the AccountController. The Create User 
+Database page and all related code should be deleted before using this template in a production environment.
 
-        // Apply migrations at startup
-        using (var scope = app.Services.CreateScope())
-        {
-            var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-            dbContext.Database.Migrate();
-        }
+You can also install the Entity Framework Design'time package and run migrations from the command line.
 
 ### Email Client Setup with SendGrid
 

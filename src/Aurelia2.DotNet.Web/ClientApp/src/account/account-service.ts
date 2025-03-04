@@ -10,18 +10,43 @@ export class AccountService {
     constructor(private readonly http: IHttpClient = resolve(newInstanceOf(IHttpClient))) {
     }
 
-    async isAuthenticated(): Promise<boolean> {
-        const response = await this.http.fetch('api/account/IsAuthenticated', {
-            method: 'GET',
-            credentials: 'include'
-        });
+    // DEVELOPMENT ONLY method to create the user database
+    async createUserDatabase(): Promise<boolean> {
+        try {
+            const response = await this.http.fetch('api/account/CreateUserDatabase', {
+                method: 'GET'
+            });
 
-        if (!response.ok) {
+            if (!response.ok) {
+                console.error('Failed to create user database:', response.statusText);
+                return false;
+            }
+
+            return true;
+        } catch (error) {
+            console.error('Error creating user database:', error);
             return false;
         }
+    }
 
-        const result = await response.json();
-        return result.isAuthenticated;
+    async isAuthenticated(): Promise<boolean> {
+        try {
+            const response = await this.http.fetch('api/account/IsAuthenticated', {
+                method: 'GET',
+                credentials: 'include'
+            });
+
+            if (!response.ok) {
+                console.error('Failed to check authentication status:', response.statusText);
+                return false;
+            }
+
+            const result = await response.json();
+            return result.isAuthenticated;
+        } catch (error) {
+            console.error('Error checking authentication status:', error);
+            return false;
+        }
     }
 
     async login(loginViewModel: ILoginViewModel): Promise<Response> {

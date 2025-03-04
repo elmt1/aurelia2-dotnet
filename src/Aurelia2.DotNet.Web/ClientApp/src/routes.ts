@@ -7,6 +7,7 @@ import { CustomElement } from "aurelia";
 import { ProductListPage } from "./product/product-list-page";
 import { RequestPasswordResetPage } from "./account/request-password-reset-page";
 import { ResetPasswordPage } from "./account/reset-password-page";
+import { CreateUserDatabasePage } from "./account/create-user-database-page";
 
 export interface Route {
     id: string;
@@ -31,6 +32,12 @@ export const routes: Route[] = [
         path: 'confirm-email/:userId/:code',
         component: ConfirmEmailPage,
         title: 'Confirm Email'
+    },
+    {
+        id: 'create-user-database',
+        path: 'create-user-database',
+        component: CreateUserDatabasePage,
+        title: 'Create User Database'
     },
     {
         id: 'home',
