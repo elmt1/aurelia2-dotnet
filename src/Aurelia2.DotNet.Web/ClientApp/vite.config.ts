@@ -23,6 +23,15 @@ export default defineConfig({
             allow: ['..']
         }
     },
+    // Remove deprecation warnings related to Bootstrap sass saying that the @import 
+    // rule in Sass that is deprecated and will be removed in Dart Sass 3.0.0
+    css: {
+        preprocessorOptions: {
+            scss: {
+                quietDeps: true
+            }
+        }
+    },
     plugins: [
         aurelia({
             useDev: true,

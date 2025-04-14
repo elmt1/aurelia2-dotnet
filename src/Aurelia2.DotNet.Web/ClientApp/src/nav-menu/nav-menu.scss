@@ -1,0 +1,40 @@
+﻿.navbar {
+    background-color: darkslateblue;
+}
+
+.nav-link {
+    font-size: var(--bs-nav-link-font-size, calc(1rem + .2vw));
+}
+
+nav {
+    display: flex;
+}
+
+a {
+    padding: 10px;
+    text-decoration: none;
+    color: black;
+
+    &:hover {
+        background-color: rgba(255, 255, 255, 0.4);
+        border-radius: 10px;
+		box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+}
+
+.active {
+    font-weight: bold;
+    color: white;
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-brand img {
+    height: 50px;
+    width: auto;
+    display: block;
+    background-color: #fff;
+    padding: 5px;
+    border-radius: 5px;
+}

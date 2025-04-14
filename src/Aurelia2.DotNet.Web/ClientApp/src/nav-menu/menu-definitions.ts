@@ -7,6 +7,7 @@ export interface MenuDefinition {
     route?: any;
     title?: string;
     icon?: string;
+    isActive?: boolean;
     children?: MenuDefinition[];
 }
 

@@ -1,9 +1,10 @@
 <template>
     <div class="container">
+        <br />
         <div class="mt-5 bg-body-secondary position-relative p-5 text-muted bg-body border border-dashed rounded-5">
             <form class="form-horizontal" submit.trigger="register()">
                 <div class="form-floating mb-3">
-                    <input id="email" class="form-control" aria-required="true" autocomplete="on" type="email" placeholder="name@example.com" value.bind="registerViewModel.email">
+                    <input id="email" class="form-control" aria-required="true" autocomplete="on" type="email" placeholder="name@example.com" value.bind="loginViewModel.email" ref="emailInput">
                     <label for="email">Email address</label>
                 </div>
                 <div class="form-floating mb-3">

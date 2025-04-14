@@ -16,6 +16,8 @@ public class Program
         builder.Services.AddDbContext<ApplicationDbContext>(options =>
             options.UseSqlServer(connectionString));
 
+
+
         // If there is some way to send email, require email confirmation
         var emailConfirmation = (builder.Configuration.GetValue<string>("SendGrid:Key") != null);
         if (emailConfirmation)

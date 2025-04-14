@@ -1,2 +1,20 @@
-@import 'bootstrap/dist/css/bootstrap.css';
-@import '@fortawesome/fontawesome-free/css/all.css';
+// Override Bootstrap variables
+@use 'bootstrap/scss/bootstrap' with ( 
+    $form-check-input-checked-bg-color: #2F4F4F, 
+    $form-check-input-indeterminate-bg-color: #2F4F4F, 
+    $form-check-input-indeterminate-border-color: #D3D3D3, 
+    $focus-ring-color: rgba(#D3D3D3, .5),    
+    $form-select-focus-border-color: rgba(0, 0, 0, 0.25),
+    $input-focus-border-color: #000000,
+    $theme-colors: ( "primary": #2F4F4F, "secondary": #D3D3D3, "info": #6FA8DC, "danger": #E06666, "success": #93C47D, "dark": #444444 )
+);
+@use '@fortawesome/fontawesome-free/css/all' as *;
+
+.form-label {
+    font-weight: 500;
+}
+
+input[type="checkbox"] {
+    transform: scale(1.5);
+    margin-left: .2rem;
+}

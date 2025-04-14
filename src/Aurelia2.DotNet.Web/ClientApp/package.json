@@ -4,8 +4,7 @@
   "version": "0.1.1",
   "scripts": {
     "prestart": "node ./aspnetcore-https.js",
-    "start": "copyfiles -u 1 public/index.html ./ && node replace-tags.js && vite",
-    "dev": "copyfiles -u 1 public/index.html ./ && node replace-tags.js && vite",
+    "start": "node copy-replace-tags.js && vite",
     "build": "vite build",
     "serve": "vite preview"
   },
@@ -19,22 +18,22 @@
     "@fortawesome/fontawesome-free": "^6.7.2",
     "@popperjs/core": "^2.11.8",
     "aurelia": "latest",
-    "bootstrap": "^5.3.3"
+    "bootstrap": "^5.3.5"
   },
   "devDependencies": {
-    "@aurelia/testing": "latest",
     "@aurelia/vite-plugin": "latest",
-    "@types/node": "^22.10.2",
-    "copyfiles": "^2.4.1",
-    "eslint": "^9.17.0",
-    "globals": "^15.14.0",
-    "sass": "^1.83.0",
-    "stylelint": "^16.12.0",
+    "@types/node": "^22.14.1",
+    "esbuild": ">=0.25.2",
+    "eslint": "^9.24.0",
+    "fs-extra": "^11.3.0",
+    "globals": "^16.0.0",
+    "sass": "^1.86.3",
+    "stylelint": "^16.18.0",
     "stylelint-config-standard-scss": "^14.0.0",
     "tslib": "^2.8.1",
-    "typescript": "^5.7.3",
-    "typescript-eslint": "^8.18.1",
-    "vite": "^6.1.1",
+    "typescript": "^5.8.3",
+    "typescript-eslint": "^8.29.1",
+    "vite": "^6.2.6",
     "vite-plugin-node-polyfills": "^0.23.0"
   },
   "type": "module",

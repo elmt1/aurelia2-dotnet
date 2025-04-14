@@ -7,10 +7,19 @@ import { routes } from '../routes'; // Import routes
 @inject(AccountService, IRouter)
 export class RequestPasswordResetPage {
     private readonly requestPasswordResetModel: IRequestPasswordResetViewModel;
+    private emailInput: HTMLInputElement;
+
     constructor(private readonly accountService: AccountService, private readonly router: IRouter) { }
     private getBaseUrl(): string {
         const { protocol, host } = window.location;
         return `${protocol}//${host}`;
+    }
+
+    public attached(): void {
+        // Set focus to the email input element
+        if (this.emailInput) {
+            this.emailInput.focus();
+        }
     }
 
     public async requestReset() {

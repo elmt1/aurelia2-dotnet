@@ -1,19 +1,23 @@
 import { IHttpClient, json } from '@aurelia/fetch-client';
+import { inject, newInstanceOf } from 'aurelia';
+import { AuthState } from './auth-state';
 import { ILoginViewModel } from './login-view-model';
 import { IRegisterViewModel } from './register-view-model';
-import { resolve, newInstanceOf } from 'aurelia';
 import { IRequestPasswordResetViewModel } from './request-password-reset-view-model';
 import { IResetPasswordViewModel } from './reset-password-view-model';
 
+@inject(newInstanceOf(IHttpClient), AuthState)
 export class AccountService {
 
-    constructor(private readonly http: IHttpClient = resolve(newInstanceOf(IHttpClient))) {
-    }
+    constructor(
+        private readonly httpClient: IHttpClient,
+        private readonly authState: AuthState
+    ) { }
 
     // DEVELOPMENT ONLY method to create the user database
     async createUserDatabase(): Promise<boolean> {
         try {
-            const response = await this.http.fetch('api/account/CreateUserDatabase', {
+            const response = await this.httpClient.fetch('api/account/CreateUserDatabase', {
                 method: 'GET'
             });
 
@@ -29,29 +33,32 @@ export class AccountService {
         }
     }
 
-    async isAuthenticated(): Promise<boolean> {
-        try {
-            const response = await this.http.fetch('api/account/IsAuthenticated', {
-                method: 'GET',
-                credentials: 'include'
-            });
+    //async isAuthenticated(): Promise<boolean> {
+    //    try {
+    //        const response = await this.httpClient.fetch('api/account/IsAuthenticated', {
+    //            method: 'GET',
+    //            credentials: 'include'
+    //        });
 
-            if (!response.ok) {
-                console.error('Failed to check authentication status:', response.statusText);
-                return false;
-            }
+    //        if (!response.ok) {
+    //            console.error('Failed to check authentication status:', response.statusText);
+    //            return false;
+    //        }
 
-            const result = await response.json();
-            return result.isAuthenticated;
-        } catch (error) {
-            console.error('Error checking authentication status:', error);
-            return false;
-        }
-    }
+    //        const result = await response.json();
+    //        this.authState.isAuthenticated = result.isAuthenticated;
+
+    //        return result.isAuthenticated;
+
+    //    } catch (error) {
+    //        console.error('Error checking authentication status:', error);
+    //        return false;
+    //    }
+    //}
 
     async login(loginViewModel: ILoginViewModel): Promise<Response> {
         try {
-            const response = await this.http.fetch('api/account/Login', {
+            const response = await this.httpClient.fetch('api/account/Login', {
                 method: 'POST',
                 body: json(loginViewModel),
                 credentials: 'include'
@@ -61,6 +68,7 @@ export class AccountService {
                 throw new Error('Login failed');
             }
 
+            this.authState.isAuthenticated = true;
             return response;
 
         } catch (error) {
@@ -70,7 +78,7 @@ export class AccountService {
     }
 
     async logout(): Promise<void> {
-        const response = await this.http.fetch('api/account/Logout', {
+        const response = await this.httpClient.fetch('api/account/Logout', {
             method: 'POST',
             credentials: 'include'
         });
@@ -78,11 +86,13 @@ export class AccountService {
         if (!response.ok) {
             throw new Error('Failed to logout');
         }
+
+        this.authState.isAuthenticated = false;
     }
 
     async register(registerViewModel: IRegisterViewModel): Promise<Response> {
         try {
-            const response = await this.http.fetch('api/account/register', {
+            const response = await this.httpClient.fetch('api/account/register', {
                 method: 'POST',
                 body: json(registerViewModel)
             });
@@ -100,7 +110,7 @@ export class AccountService {
     }
 
     async confirmEmail(userId: string, code: string): Promise<boolean> {
-        const response = await this.http.fetch(`api/account/confirmEmail?userId=${encodeURIComponent(userId)}&code=${encodeURIComponent(code)}`, {
+        const response = await this.httpClient.fetch(`api/account/confirmEmail?userId=${encodeURIComponent(userId)}&code=${encodeURIComponent(code)}`, {
             method: 'GET'
         });
 
@@ -108,7 +118,7 @@ export class AccountService {
     }
 
     async sendResetPasswordEmail(requestResetPasswordViewModel: IRequestPasswordResetViewModel): Promise<void> {
-        const response = await this.http.fetch('api/account/RequestPasswordReset', {
+        const response = await this.httpClient.fetch('api/account/RequestPasswordReset', {
             method: 'POST',
             body: json(requestResetPasswordViewModel),
             credentials: 'include'
@@ -120,7 +130,7 @@ export class AccountService {
     }
 
     async resetPassword(resetPasswordViewModel: IResetPasswordViewModel): Promise<void> {
-        const response = await this.http.fetch('api/account/ResetPassword', {
+        const response = await this.httpClient.fetch('api/account/ResetPassword', {
             method: 'POST',
             body: json(resetPasswordViewModel),
             credentials: 'include'
