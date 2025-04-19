@@ -88,13 +88,26 @@ Sets up HTTPS for the application using the ASP.NET Core HTTPS certificate.
 ## Publishing the Project
 
 To create a published version of the website, use the following commands from the root of the 
-Aurelia2.DotNet.Web project:
+Aurelia2.DotNet.Web project. The first option creates an in-place version of the Web site for testing 
+the second would be used to create a self-contained version of the website that can be published to 
+your Web server:
 
-dotnet publish
+`dotnet publish -c Release .\Aurelia2.DotNet.Web.csproj`
 
-Creates a published version of the website using dotnet publish and vite build. The output can be run using 
-the following from a command line in the root of the publish target directory:
+or...
 
-set ASPNETCORE_URLS=https://localhost:5001
-dotnet Aurelia2.DotNet.Web.dll
+`dotnet publish -c Release --self-contained --output <output-dir> --runtime win-x64 .\Aurelia2.DotNet.Web.csproj`
 
+The output can be run using the following from a command line in the root of the publish target directory:
+
+`set ASPNETCORE_URLS=https://localhost:5001`
+
+For the in-place version run the following:
+
+`dotnet aurelia2-dotnet\src\Aurelia2.DotNet.Web\bin\release\net9.0\Aurelia2Aurelia2.DotNet.Web.dll`
+
+For the self-contained version, run the following:
+
+`dotnet <output-dir>\Aurelia2Aurelia2.DotNet.Web.dll`
+
+https://localhost:5001/home
