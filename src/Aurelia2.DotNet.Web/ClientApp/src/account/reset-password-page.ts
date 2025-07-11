@@ -1,7 +1,7 @@
 import { inject } from "@aurelia/kernel";
 import { AccountService } from "./account-service";
 import { IResetPasswordViewModel } from "./reset-password-view-model";
-import { IRouter, Params } from "@aurelia/router-lite";
+import { IRouter, Params } from "@aurelia/router";
 import { routes } from '../routes'; // Import routes
 
 @inject(AccountService, IRouter)

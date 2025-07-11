@@ -9,7 +9,7 @@
 
 ## Packages Summary
 
-- **[@aurelia/router-lite](https://www.npmjs.com/package/@aurelia/router-lite)**: Router for Aurelia applications.
+- **[@aurelia/router](https://www.npmjs.com/package/@aurelia/router)**: Router for Aurelia applications.
 - **[@fortawesome/fontawesome-free](https://www.npmjs.com/package/@fortawesome/fontawesome-free)**: Free set of Font Awesome icons.
 - **[@popperjs/core](https://www.npmjs.com/package/@popperjs/core)**: Popper.js for tooltips and popovers.
 - **[aurelia](https://www.npmjs.com/package/aurelia)**: Aurelia framework.

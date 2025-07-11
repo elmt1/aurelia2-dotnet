@@ -1,7 +1,7 @@
 import { inject } from "@aurelia/kernel";
 import { AccountService } from "./account-service";
 import { IRegisterViewModel } from "./register-view-model";
-import { IRouter } from "@aurelia/router-lite";
+import { IRouter } from "@aurelia/router";
 import { routes } from '../routes'; // Import routes
 
 @inject(AccountService, IRouter)

@@ -1,4 +1,4 @@
-import { IRouter, Params } from "@aurelia/router-lite";
+import { IRouter, Params } from "@aurelia/router";
 import { AccountService } from "./account-service";
 import { inject } from "@aurelia/kernel";
 

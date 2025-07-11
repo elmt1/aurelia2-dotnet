@@ -1,7 +1,7 @@
 import { inject } from "@aurelia/kernel";
 import { AccountService } from "./account-service";
 import { ILoginViewModel } from "./login-view-model";
-import { IRouter } from "@aurelia/router-lite";
+import { IRouter } from "@aurelia/router";
 import { CookieService } from "../cookie/cookie-service";
 
 @inject(AccountService, IRouter, CookieService)

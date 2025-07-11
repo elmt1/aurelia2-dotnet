@@ -38,18 +38,6 @@ export default defineConfig({
         }),
         nodePolyfills()
     ],
-    build: {
-        outDir: 'dist',
-        emptyOutDir: true,
-        rollupOptions: {
-            input: 'src/main.ts', // Ensure the entry point is set to your main TypeScript file
-            output: {
-                entryFileNames: 'dist/[name].js',
-                chunkFileNames: 'dist/[name].js',
-                assetFileNames: 'dist/[name].[ext]'
-            }
-        }
-    },
     publicDir: 'public'
 });
 

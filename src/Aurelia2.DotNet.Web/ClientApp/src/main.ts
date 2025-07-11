@@ -1,6 +1,6 @@
 import Aurelia, { StyleConfiguration } from 'aurelia';
 import { App } from './app';
-import { RouterConfiguration } from '@aurelia/router-lite';
+import { RouterConfiguration } from '@aurelia/router';
 import bootstrap from 'bootstrap/dist/css/bootstrap.css?inline';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js'; // Import Bootstrap JavaScript
 import fontawesome from '@fortawesome/fontawesome-free/css/all.css?inline';

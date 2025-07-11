@@ -1,5 +1,5 @@
 ﻿import { inject } from '@aurelia/kernel';
-import { IRouter } from '@aurelia/router-lite';
+import { IRouter } from '@aurelia/router';
 import { AccountService } from '../account/account-service';
 import { Route, routes } from '../routes';
 import { MenuDefinition, menuDefinitions } from './menu-definitions';

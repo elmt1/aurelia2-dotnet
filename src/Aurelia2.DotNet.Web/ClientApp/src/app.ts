@@ -1,4 +1,4 @@
-import { route } from "@aurelia/router-lite";
+import { route } from "@aurelia/router";
 import { routes } from "./routes";
 
 @route({

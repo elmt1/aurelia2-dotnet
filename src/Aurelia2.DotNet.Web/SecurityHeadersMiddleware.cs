@@ -17,9 +17,8 @@ public class SecurityHeadersMiddleware
         context.Response.Headers["X-XSS-Protection"] = "1; mode=block";
         context.Response.Headers["Referrer-Policy"] = "no-referrer";
         context.Response.Headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains; preload";
-        context.Response.Headers["Permissions-Policy"] = "geolocation=(self), microphone=(), camera=(), usb=(), vr=(), midi=(), magnetometer=(), fullscreen=(), payment=()";
+        context.Response.Headers["Permissions-Policy"] = "geolocation=(self), microphone=(), camera=(), usb=(), midi=(), magnetometer=(), fullscreen=('self' 'https://challenges.cloudflare.com'), payment=()";
         context.Response.Headers["Expect-CT"] = "max-age=86400, enforce";
-        context.Response.Headers["Feature-Policy"] = "vibrate 'none';";
 
         await this.next(context);
     }
