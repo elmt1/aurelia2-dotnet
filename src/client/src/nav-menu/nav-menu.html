@@ -1,6 +1,6 @@
 ﻿<template>
     <nav class="navbar navbar-expand-lg navbar-dark">
-        <a class="navbar-brand" href="#/home">
+        <a class="navbar-brand" load="home">
             <img src="logo.svg" alt="Logo" class="d-inline-block align-top" />
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -13,7 +13,7 @@
                     <template if.bind="!menuItem.children || menuItem.children.length === 0">
                         <li if.bind="!menuItem.route.data.auth || menuItem.route.data.auth.indexOf(accountService.authState.accessState.role) > -1" 
                             class="nav-item" class.bind="menuItem.isActive ? 'active' : ''">
-                            <a href.bind="menuItem.route.path" class="nav-link" click.trigger="setActive(menuItem)">
+                            <a load.bind="menuItem.route.path" class="nav-link" click.trigger="setActive(menuItem)">
                                 <i class="${menuItem.icon}"></i>&nbsp;&nbsp;${menuItem.title || menuItem.route.title}
                             </a>
                         </li>
@@ -28,7 +28,7 @@
                                 <template repeat.for="child of menuItem.children">
                                     <li if.bind="!child.route.data.auth || child.route.data.auth.indexOf(accountService.authState.accessState.role) > -1"
                                         class="nav-item" class.bind="child.isActive ? 'active' : ''">
-                                        <a href.bind="child.route.path" class="dropdown-item" click.trigger="setActive(child)">
+                                        <a load.bind="child.route.path" class="dropdown-item" click.trigger="setActive(child)">
                                             <i class="${child.icon}"></i>&nbsp;&nbsp;${child.title || child.route.title}
                                         </a>
                                     </li>

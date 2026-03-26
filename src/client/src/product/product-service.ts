@@ -14,7 +14,7 @@ export class ProductService {
         try {
             HttpClientService.storeReturnUrl('/product-list');
 
-            const response = await this.http.fetch('api/product/ProductList', {
+            const response = await this.http.fetch('/api/product/ProductList', {
                 method: 'GET',
                 credentials: 'include'
             });

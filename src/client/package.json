@@ -4,7 +4,7 @@
   "version": "2.0.0-rc.1",
   "scripts": {
     "prestart": "node aspnetcore-https.js",
-    "start": "node copy-replace-tags.js && vite || pause",
+    "start": "vite || pause",
     "lint": "eslint src --ext .ts",
     "lint:fix": "eslint src --ext .ts --fix",
     "build": "vite build",

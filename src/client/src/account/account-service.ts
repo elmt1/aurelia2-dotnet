@@ -20,7 +20,7 @@ export class AccountService {
     // DEVELOPMENT ONLY method to create the user database
     async createUserDatabase(): Promise<boolean> {
         try {
-            const response = await this.httpClient.fetch('api/account/CreateUserDatabase', {
+            const response = await this.httpClient.fetch('/api/account/CreateUserDatabase', {
                 method: 'POST',
                 credentials: 'include'
             });
@@ -62,7 +62,7 @@ export class AccountService {
 
     async login(loginViewModel: ILoginViewModel): Promise<Response> {
         try {
-            const response = await this.httpClient.fetch('api/account/Login', {
+            const response = await this.httpClient.fetch('/api/account/Login', {
                 method: 'POST',
                 body: json(loginViewModel),
                 credentials: 'include'
@@ -84,7 +84,7 @@ export class AccountService {
     }
 
     async logout(): Promise<void> {
-        const response = await this.httpClient.fetch('api/account/Logout', {
+        const response = await this.httpClient.fetch('/api/account/Logout', {
             method: 'POST',
             credentials: 'include'
         });
@@ -100,7 +100,7 @@ export class AccountService {
 
     async register(registerViewModel: IRegisterViewModel): Promise<Response> {
         try {
-            const response = await this.httpClient.fetch('api/account/register', {
+            const response = await this.httpClient.fetch('/api/account/register', {
                 method: 'POST',
                 body: json(registerViewModel),
                 credentials: 'include'
@@ -120,7 +120,7 @@ export class AccountService {
     }
 
     async confirmEmail(userId: string, code: string): Promise<boolean> {
-        const response = await this.httpClient.fetch(`api/account/confirmEmail?userId=${encodeURIComponent(userId)}&code=${encodeURIComponent(code)}`, {
+        const response = await this.httpClient.fetch(`/api/account/confirmEmail?userId=${encodeURIComponent(userId)}&code=${encodeURIComponent(code)}`, {
             method: 'GET',
             credentials: 'include'
         });
@@ -129,7 +129,7 @@ export class AccountService {
     }
 
     async sendResetPasswordEmail(requestResetPasswordViewModel: IRequestPasswordResetViewModel): Promise<void> {
-        const response = await this.httpClient.fetch('api/account/RequestPasswordReset', {
+        const response = await this.httpClient.fetch('/api/account/RequestPasswordReset', {
             method: 'POST',
             body: json(requestResetPasswordViewModel),
             credentials: 'include'
@@ -141,7 +141,7 @@ export class AccountService {
     }
 
     async resetPassword(resetPasswordViewModel: IResetPasswordViewModel): Promise<void> {
-        const response = await this.httpClient.fetch('api/account/ResetPassword', {
+        const response = await this.httpClient.fetch('/api/account/ResetPassword', {
             method: 'POST',
             body: json(resetPasswordViewModel),
             credentials: 'include'

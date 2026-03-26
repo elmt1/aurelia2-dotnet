@@ -37,7 +37,7 @@ Configures Vite for the Aurelia 2 application, including:
 ### `tsconfig.json`
 
 Specifies the TypeScript compilation settings:
-  - Targeting `ES2020` and using `moduleResolution: "node"`.
+  - Targeting `ES2022` and using `moduleResolution: "nodenext"`.
   - Skips library checks (`skipLibCheck`).
   - Excludes emitting compiled files in favor of Vite bundling.
 
@@ -134,22 +134,23 @@ From `src\client`:
 ### `package.json` Scripts
 
 - **prestart**: Runs `aspnetcore-https.js` to set up HTTPS.
-- **start**: Copies `index.html` to the client root, updates the development tags, and starts Vite.
+- **start**: Starts the Vite development server.
 - **lint**: Runs ESLint over the client TypeScript sources.
 - **lint:fix**: Runs ESLint and applies safe automatic fixes.
 - **build**: Builds the project using Vite.
 - **serve**: Previews the built project using Vite.
+
+### `index.html`
+
+The client root `src\client\index.html` is the Vite entry page for development.
+
+Navigation uses Aurelia router `load` bindings and client API calls use absolute `/api/...` paths so routes and requests resolve correctly from nested pages such as `product-list`.
 
 ### API Security Notes
 
 - `GET /api/account/antiforgery-token` issues the current request token.
 - Unsafe API calls are expected to use the shared configured `IHttpClient` so the XSRF header is attached automatically.
 - `Login` refreshes the sign-in after claims are added so policy-based endpoints can succeed immediately after login.
-
-### `copy-replace-tags.js`
-
-Copies `public\index.html` to the client root and rewrites it for development so Vite can serve the app correctly.
-
 
 ### `aspnetcore-https.js`
 

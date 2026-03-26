@@ -4,7 +4,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 using System.Diagnostics;
+using System.Net;
 using System.Net.NetworkInformation;
+using System.Net.Http;
 using System.Security.Claims;
 
 namespace Aurelia2.DotNet.Web.Api;
@@ -178,6 +180,7 @@ public class Program
     private static Process? StartClientIfNeeded()
     {
         const int port = 5002;
+        const int startupTimeoutSeconds = 30;
 
         if (IsPortListening(port))
         {
@@ -218,6 +221,11 @@ public class Program
         }
 
         Console.WriteLine($"Client start requested (PID: {process.Id}). Expected URL: https://localhost:{port}");
+
+        if (!WaitForClientReady($"https://localhost:{port}/", TimeSpan.FromSeconds(startupTimeoutSeconds)))
+        {
+            Console.WriteLine($"Timed out waiting for the Aurelia client to start on https://localhost:{port}.");
+        }
 
         return process;
     }
@@ -306,6 +314,38 @@ public class Program
         IPGlobalProperties.GetIPGlobalProperties()
             .GetActiveTcpListeners()
             .Any(endpoint => endpoint.Port == port);
+
+    private static bool WaitForClientReady(string clientUrl, TimeSpan timeout)
+    {
+        var stopwatch = Stopwatch.StartNew();
+        using var handler = new HttpClientHandler
+        {
+            ServerCertificateCustomValidationCallback = static (_, _, _, _) => true
+        };
+        using var httpClient = new HttpClient(handler)
+        {
+            Timeout = TimeSpan.FromSeconds(2)
+        };
+
+        while (stopwatch.Elapsed < timeout)
+        {
+            try
+            {
+                using var response = httpClient.GetAsync(clientUrl).GetAwaiter().GetResult();
+                if (response.StatusCode != HttpStatusCode.NotFound)
+                {
+                    return true;
+                }
+            }
+            catch
+            {
+            }
+
+            Thread.Sleep(250);
+        }
+
+        return false;
+    }
 
     private static void StopClient(Process? process)
     {

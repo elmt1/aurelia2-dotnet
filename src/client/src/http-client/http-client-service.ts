@@ -47,7 +47,7 @@ export class HttpClientService {
 
         if (HttpClientService.xsrfTokenPromise === null) {
             HttpClientService.xsrfTokenPromise = (async () => {
-                const response = await fetch('api/account/antiforgery-token', {
+                const response = await fetch('/api/account/antiforgery-token', {
                     method: 'GET',
                     credentials: 'include'
                 });
