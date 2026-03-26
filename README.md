@@ -163,6 +163,12 @@ Publish the backend from `src\Aurelia2.DotNet.Web.Api`.
 
 The repository includes `publish-self-contained.ps1` at the repo root.
 
+The script accepts these parameters:
+
+- `-Configuration` default: `Release`
+- `-Runtime` default: `win-x64`
+- `-OutputDir` optional: exact final publish folder
+
 The script will:
 
 - run `npm install` in `src\client`
@@ -170,13 +176,41 @@ The script will:
 - publish `Aurelia2.DotNet.Web.Api` as a self-contained deployment
 - copy the client `dist` output into the published `wwwroot`
 
-Example:
+Example script usage:
 
 `pwsh -File .\publish-self-contained.ps1 -Runtime win-x64`
 
+`pwsh -File .\publish-self-contained.ps1 -Configuration Release -Runtime linux-x64`
+
+`pwsh -File .\publish-self-contained.ps1 -Runtime win-x64 -OutputDir .\artifacts\custom-publish`
+
+If `-OutputDir` is omitted, the final publish folder is:
+
+`artifacts\publish\self-contained\<Runtime>`
+
+For example, with the defaults, output goes to:
+
+`artifacts\publish\self-contained\win-x64`
+
+If `-OutputDir` is supplied, that path is used as the exact final publish folder.
+
+For example:
+
+`pwsh -File .\publish-self-contained.ps1 -Runtime win-x64 -OutputDir C:\temp\publish`
+
+publishes directly to:
+
+`C:\temp\publish`
+
+### Direct `dotnet publish`
+
+If you do **not** want to use the script, you can publish the backend directly instead.
+
+These commands only publish the API project. They do **not** run the client build or copy client assets for you.
+
 `dotnet publish -c Release .\Aurelia2.DotNet.Web.Api.csproj`
 
-or...
+or
 
 `dotnet publish -c Release --self-contained --output <output-dir> --runtime win-x64 .\Aurelia2.DotNet.Web.Api.csproj`
 

@@ -17,6 +17,24 @@ export class LoginPage {
         private readonly cookieService: CookieService
     ) { }
 
+    private getSafeReturnUrl(returnUrl: string | null | undefined): string | null {
+        if (!returnUrl) {
+            return null;
+        }
+
+        try {
+            const url = new URL(returnUrl, window.location.origin);
+
+            if (url.origin !== window.location.origin || url.pathname.endsWith('/login')) {
+                return null;
+            }
+
+            return `${url.pathname}${url.search}${url.hash}`;
+        } catch {
+            return null;
+        }
+    }
+
     public attached(): void {
         // Retrieve email from cookie if it exists
         const rememberedEmail = this.cookieService.getCookie('Aurelia2.Email');
@@ -50,8 +68,9 @@ export class LoginPage {
 
             const queryReturnUrl = new URLSearchParams(window.location.search).get('returnUrl');
             const returnUrl = queryReturnUrl ?? HttpClientService.consumeReturnUrl();
-            if (returnUrl && !returnUrl.endsWith('/login')) {
-                window.location.assign(returnUrl);
+            const safeReturnUrl = this.getSafeReturnUrl(returnUrl);
+            if (safeReturnUrl) {
+                window.location.assign(safeReturnUrl);
                 return;
             }
 

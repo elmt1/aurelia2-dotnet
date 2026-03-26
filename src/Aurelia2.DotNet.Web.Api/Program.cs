@@ -81,7 +81,7 @@ public class Program
             {
                 options.HeaderName = "X-XSRF-TOKEN";
                 options.Cookie.Name = "XSRF-TOKEN";
-                options.Cookie.HttpOnly = false;
+                options.Cookie.HttpOnly = true;
                 options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
                 options.Cookie.SameSite = SameSiteMode.None;
             });
