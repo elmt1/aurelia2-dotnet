@@ -1,10 +1,10 @@
 ﻿import { inject } from '@aurelia/kernel';
 import { IRouter } from '@aurelia/router';
-import { AccountService } from '../account/account-service';
-import { routes } from '../routes';
-import type { Route } from '../routes';
-import { menuDefinitions } from './menu-definitions';
-import type { MenuDefinition } from './menu-definitions';
+import { AccountService } from '../account/account-service.js';
+import type { Route } from '../routes.js';
+import { routes } from '../routes.js';
+import type { MenuDefinition } from './menu-definitions.js';
+import { menuDefinitions } from './menu-definitions.js';
 
 @inject(AccountService, IRouter)
 export class NavMenu {

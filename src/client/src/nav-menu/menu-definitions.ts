@@ -1,4 +1,4 @@
-﻿import type { Route } from '../routes';
+﻿import type { Route } from '../routes.js';
 
 // Define the nestable menu structure for the application
 //   id: used to retrieve associated route

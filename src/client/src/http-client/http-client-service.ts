@@ -1,5 +1,5 @@
 import type { IHttpClient } from '@aurelia/fetch-client';
-import { eventEmitter } from '../event-emitter';
+import { eventEmitter } from '../event-emitter.js';
 
 export class HttpClientService {
     private static readonly returnUrlStorageKey = 'aurelia2.returnUrl';

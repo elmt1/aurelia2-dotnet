@@ -1,11 +1,11 @@
 import { IHttpClient, json } from '@aurelia/fetch-client';
 import { inject } from 'aurelia';
-import { AuthState } from './auth-state';
-import { HttpClientService } from '../http-client/http-client-service';
-import type { ILoginViewModel } from './login-view-model';
-import type { IRegisterViewModel } from './register-view-model';
-import type { IRequestPasswordResetViewModel } from './request-password-reset-view-model';
-import type { IResetPasswordViewModel } from './reset-password-view-model';
+import { HttpClientService } from '../http-client/http-client-service.js';
+import { AuthState } from './auth-state.js';
+import type { ILoginViewModel } from './login-view-model.js';
+import type { IRegisterViewModel } from './register-view-model.js';
+import type { IRequestPasswordResetViewModel } from './request-password-reset-view-model.js';
+import type { IResetPasswordViewModel } from './reset-password-view-model.js';
 
 @inject(IHttpClient, AuthState)
 export class AccountService {

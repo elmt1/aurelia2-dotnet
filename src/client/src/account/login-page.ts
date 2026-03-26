@@ -1,9 +1,9 @@
 import { inject } from "@aurelia/kernel";
-import { AccountService } from "./account-service";
-import type { ILoginViewModel } from "./login-view-model";
 import { IRouter } from "@aurelia/router";
-import { CookieService } from "../cookie/cookie-service";
-import { HttpClientService } from "../http-client/http-client-service";
+import { CookieService } from "../cookie/cookie-service.js";
+import { HttpClientService } from "../http-client/http-client-service.js";
+import { AccountService } from "./account-service.js";
+import type { ILoginViewModel } from "./login-view-model.js";
 
 @inject(AccountService, IRouter, CookieService)
 export class LoginPage {

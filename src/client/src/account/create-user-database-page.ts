@@ -1,6 +1,6 @@
 import { inject } from "@aurelia/kernel";
-import { AccountService } from "./account-service";
 import { IRouter } from "@aurelia/router";
+import { AccountService } from "./account-service.js";
 
 @inject(AccountService, IRouter)
 export class CreateUserDatabasePage {

@@ -1,8 +1,8 @@
 import { inject } from "@aurelia/kernel";
-import { AccountService } from "./account-service";
-import type { IRequestPasswordResetViewModel } from "./request-password-reset-view-model";
 import { IRouter } from "@aurelia/router";
-import { routes } from '../routes'; // Import routes
+import { routes } from '../routes.js'; // Import routes
+import { AccountService } from "./account-service.js";
+import type { IRequestPasswordResetViewModel } from "./request-password-reset-view-model.js";
 
 @inject(AccountService, IRouter)
 export class RequestPasswordResetPage {

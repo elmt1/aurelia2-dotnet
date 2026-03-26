@@ -1,7 +1,7 @@
 import { IHttpClient } from '@aurelia/fetch-client';
 import { inject } from 'aurelia';
-import { HttpClientService } from '../http-client/http-client-service';
-import type { Product } from './product';
+import { HttpClientService } from '../http-client/http-client-service.js';
+import type { Product } from './product.js';
 
 @inject(IHttpClient)
 export class ProductService {

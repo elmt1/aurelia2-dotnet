@@ -1,7 +1,7 @@
 ﻿import { inject } from '@aurelia/kernel';
 import { observable } from '@aurelia/runtime';
-import { CookieService } from '../cookie/cookie-service';
-import { eventEmitter } from '../event-emitter';
+import { CookieService } from '../cookie/cookie-service.js';
+import { eventEmitter } from '../event-emitter.js';
 
 @inject(CookieService)
 export class AuthState {

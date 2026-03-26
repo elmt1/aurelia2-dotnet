@@ -1,8 +1,8 @@
 import { inject } from "@aurelia/kernel";
 import { IRouter, route } from "@aurelia/router";
-import { eventEmitter } from "./event-emitter";
-import { HttpClientService } from "./http-client/http-client-service";
-import { routes } from "./routes";
+import { eventEmitter } from "./event-emitter.js";
+import { HttpClientService } from "./http-client/http-client-service.js";
+import { routes } from "./routes.js";
 
 @inject(IRouter)
 @route({

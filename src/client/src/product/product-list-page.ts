@@ -1,5 +1,5 @@
-import { ProductService } from './product-service';
-import type { Product } from './product';
+import { ProductService } from './product-service.js';
+import type { Product } from './product.js';
 import { inject } from '@aurelia/kernel';
 
 @inject(ProductService)

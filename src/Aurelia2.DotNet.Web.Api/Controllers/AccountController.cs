@@ -83,19 +83,19 @@ namespace Aurelia2.DotNet.Web.Api.Controllers
         {
             if (ModelState.IsValid)
             {
-                var safeEmailForLogging = SanitizeForLog(model.Email);
                 var result = await signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, lockoutOnFailure: false);
                 if (result.Succeeded)
                 {
                     var user = await userManager.FindByEmailAsync(model.Email);
                     if (user is null)
                     {
-                        return BadRequest(new[] { "Invalid login attempt." });
+                        var error = new[] { "Invalid login attempt." };
+                        return BadRequest(error);
                     }
 
                     if (logger.IsEnabled(LogLevel.Information))
                     {
-                        logger.LogInformation("User {Email} logged in.", safeEmailForLogging);
+                        logger.LogInformation("User logged in.");
                     }
 
                     await EnsureClaimsAsync(user);
@@ -103,15 +103,15 @@ namespace Aurelia2.DotNet.Web.Api.Controllers
 
                     if (logger.IsEnabled(LogLevel.Information))
                     {
-                        logger.LogInformation("User {Email} claims set.", safeEmailForLogging);
+                        logger.LogInformation("User claims set.");
                     }
 
                     return this.Content("Login Success", "application/json");
                 }
                 if (result.IsLockedOut)
                 {
-                    var message = "User: " + model.Email + " is locked out.";
-                    logger.LogWarning("User {Email} is locked out.", safeEmailForLogging);
+                    var message = "User account is locked out.";
+                    logger.LogWarning("A user account is locked out.");
                     return BadRequest(new[] { message });
                 }
                 else
@@ -152,7 +152,7 @@ namespace Aurelia2.DotNet.Web.Api.Controllers
 
                     if (logger.IsEnabled(LogLevel.Information))
                     {
-                        logger.LogInformation("Created new user account {Email} with password.", user.Email);
+                        logger.LogInformation("Created new user account.");
                     }
 
                     if (userManager.Options.SignIn.RequireConfirmedAccount)
@@ -284,16 +284,6 @@ namespace Aurelia2.DotNet.Web.Api.Controllers
             {
                 throw new InvalidOperationException($"Can't create an instance of \"{nameof(IdentityUser)}\".");
             }
-        }
-
-        private static string? SanitizeForLog(string? value)
-        {
-            if (value is null)
-            {
-                return null;
-            }
-
-            return new string(value.Where(c => !char.IsControl(c)).ToArray());
         }
 
         private IUserEmailStore<IdentityUser> GetEmailStore()

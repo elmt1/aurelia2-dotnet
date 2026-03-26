@@ -1,7 +1,7 @@
-import { IRouter } from "@aurelia/router";
-import type { Params } from "@aurelia/router";
-import { AccountService } from "./account-service";
 import { inject } from "@aurelia/kernel";
+import type { Params } from "@aurelia/router";
+import { IRouter } from "@aurelia/router";
+import { AccountService } from "./account-service.js";
 
 @inject(AccountService, IRouter)
 export class ConfirmEmailPage {
