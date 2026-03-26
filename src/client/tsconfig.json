@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "module": "ESNext",
+    "moduleResolution": "nodenext",
+    "skipLibCheck": true,
+    "target": "ES2022",
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "importHelpers": true,
+    "sourceMap": true,
+    "noEmit": true
+  },
+  "include": [
+    "src",
+    "vite.config.ts",
+    "node_modules/@types"
+  ],
+  "files": [
+    "src/resource.d.ts"
+  ]
+}

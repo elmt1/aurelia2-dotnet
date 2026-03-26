@@ -1,0 +1,16 @@
+{
+  "profiles": {
+    "Aurelia2.DotNet.Web.Api": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "launchUrl": "https://localhost:5002",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "CORS": "https://localhost:5002",
+        "ASPNETCORE_URLS": "https://localhost:5001"
+      },
+      "dotnetRunMessages": true
+    }
+  },
+  "$schema": "https://json.schemastore.org/launchsettings.json"
+}

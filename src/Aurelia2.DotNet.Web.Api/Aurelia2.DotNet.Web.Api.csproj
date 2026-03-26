@@ -1,0 +1,35 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+	  <TargetFramework>net10.0</TargetFramework>
+	  <Nullable>enable</Nullable>
+	  <IsPackable>false</IsPackable>
+	  <NoDefaultLaunchSettingsFile Condition="'$(ExcludeLaunchSettings)' == 'True'">True</NoDefaultLaunchSettingsFile>
+      <RootNamespace>Aurelia2.DotNet.Web.Api</RootNamespace>
+	  <ImplicitUsings>enable</ImplicitUsings>
+	  <UserSecretsId>aspnet-Aurelia2.DotNet.Web-a96a161e-7d24-4a24-89c8-2a5a4744ca9a</UserSecretsId>
+  </PropertyGroup>
+
+  <!-- Only define PUBLISHBUILD in Release mode -->
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <DefineConstants>$(DefineConstants);PUBLISHBUILD</DefineConstants>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.1" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.1" />
+	<PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="10.0.1" />
+	<PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="10.0.1" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.1" />
+	<PackageReference Include="Serilog.AspNetCore" Version="10.0.0" />
+	<PackageReference Include="Serilog.Settings.Configuration" Version="10.0.0" />
+	<PackageReference Include="Serilog.Sinks.Async" Version="2.1.0" />
+	<PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+	<Content Include=".template.config\dotnetcli.host.json" />
+	<Content Include=".template.config\template.json" />
+  </ItemGroup>
+
+</Project>
