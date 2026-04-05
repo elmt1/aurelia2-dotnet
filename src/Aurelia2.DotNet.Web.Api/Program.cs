@@ -58,7 +58,7 @@ public class Program
                 options.Cookie.Name = ".AspNetCore.Identity.Application";
                 options.Cookie.HttpOnly = true;
                 options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-                options.Cookie.SameSite = SameSiteMode.None;
+                options.Cookie.SameSite = SameSiteMode.Lax;
                 options.LoginPath = "/login";
                 options.LogoutPath = "/logout";
 
@@ -85,7 +85,7 @@ public class Program
                 options.Cookie.Name = "XSRF-TOKEN";
                 options.Cookie.HttpOnly = true;
                 options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-                options.Cookie.SameSite = SameSiteMode.None;
+                options.Cookie.SameSite = SameSiteMode.Lax;
             });
 
             builder.Services.AddControllers(options =>
