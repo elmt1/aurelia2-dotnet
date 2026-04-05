@@ -10,5 +10,7 @@ namespace Aurelia2.DotNet.Web.Api.Models
 
         [DataType(DataType.Text)]
         public required string PasswordResetPage { get; set; }
+
+        public string TurnstileToken { get; set; } = string.Empty;
     }
 }

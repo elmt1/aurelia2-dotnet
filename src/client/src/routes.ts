@@ -40,6 +40,12 @@ export const routes: Route[] = [
         title: 'Create User Database'
     },
     {
+        id: 'default',
+        path: '',
+        component: WelcomePage,
+        title: 'Welcome'
+    },
+    {
         id: 'home',
         path: 'home',
         component: WelcomePage,

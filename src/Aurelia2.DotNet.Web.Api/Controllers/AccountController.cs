@@ -49,6 +49,7 @@ namespace Aurelia2.DotNet.Web.Api.Controllers
             this.turnstileService = turnstileService;
         }
 
+        #if DEBUG
         /// <summary>Runs the migrations, this is ONLY FOR TESTING.</summary>
         [HttpPost("CreateUserDatabase")]
         [AllowAnonymous]
@@ -61,9 +62,11 @@ namespace Aurelia2.DotNet.Web.Api.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred while applying migrations: {ex.Message}");
+                logger.LogError(ex, "An error occurred while applying migrations.");
+                return StatusCode(500, "An error occurred while applying migrations.");
             }
         }
+#endif
 
         [HttpGet("IsAuthenticated")]
         public IActionResult IsAuthenticated()
@@ -95,7 +98,7 @@ namespace Aurelia2.DotNet.Web.Api.Controllers
                     return BadRequest(captchaErrors);
                 }
 
-                var result = await signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, lockoutOnFailure: false);
+                var result = await signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, lockoutOnFailure: true);
                 if (result.Succeeded)
                 {
                     var user = await userManager.FindByEmailAsync(model.Email);
@@ -242,8 +245,11 @@ namespace Aurelia2.DotNet.Web.Api.Controllers
                 return ValidationProblem();
             }
 
-            var user = await userManager.FindByIdAsync(userId)
-                ?? throw new ApplicationException($"Unable to load user with ID '{userId}'.");
+            var user = await userManager.FindByIdAsync(userId);
+            if (user is null)
+            {
+                return BadRequest();
+            }
 
             // Decode the code
             var decodedCode = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(code));
@@ -263,6 +269,15 @@ namespace Aurelia2.DotNet.Web.Api.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> RequestPasswordReset([FromBody] RequestPasswordResetViewModel model)
         {
+            var remoteIp = HttpContext.Connection.RemoteIpAddress?.ToString();
+            var turnstileValid = await turnstileService.VerifyTokenAsync(model.TurnstileToken, remoteIp);
+            if (!turnstileValid)
+            {
+                ModelState.AddModelError(string.Empty, "CAPTCHA verification failed. Please try again.");
+                var captchaErrors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToArray();
+                return BadRequest(captchaErrors);
+            }
+
             var user = await userManager.FindByEmailAsync(model.Email);
             if (user == null || !(await userManager.IsEmailConfirmedAsync(user)))
             {
@@ -290,6 +305,15 @@ namespace Aurelia2.DotNet.Web.Api.Controllers
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
+            }
+
+            var remoteIp = HttpContext.Connection.RemoteIpAddress?.ToString();
+            var turnstileValid = await turnstileService.VerifyTokenAsync(model.TurnstileToken, remoteIp);
+            if (!turnstileValid)
+            {
+                ModelState.AddModelError(string.Empty, "CAPTCHA verification failed. Please try again.");
+                var captchaErrors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToArray();
+                return BadRequest(captchaErrors);
             }
 
             var user = await userManager.FindByIdAsync(model.UserId);

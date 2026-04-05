@@ -6,7 +6,7 @@ export class CookieService {
         const totalMilliseconds = (days * 24 * 60 * 60 * 1000) + (hours * 60 * 60 * 1000) + (minutes * 60 * 1000);
         date.setTime(date.getTime() + totalMilliseconds);
         const expires = "expires=" + date.toUTCString();
-        document.cookie = `${name}=${value}; ${expires}; path=/`;
+        document.cookie = `${name}=${value}; ${expires}; path=/; Secure; SameSite=Lax`;
     }
 
     public getCookie(name: string): string | null {

@@ -3,4 +3,5 @@
     code: string;
     newPassword: string;
     confirmPassword: string;
+    turnstileToken: string;
 }
