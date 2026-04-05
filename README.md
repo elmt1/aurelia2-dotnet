@@ -1,236 +1,203 @@
 # aurelia2-dotnet
 
+A starter template for building web applications with an **Aurelia 2** (TypeScript / Vite) frontend and an **ASP.NET Core 10** backend. It includes cookie-based authentication with ASP.NET Core Identity, XSRF protection, security headers, claims-based authorization, and a Bootstrap navigation menu — ready to extend with your own pages and API endpoints.
+
+## Prerequisites
+
+- [.NET 10 SDK](https://dotnet.microsoft.com/download)
+- [Node.js](https://nodejs.org/) (LTS recommended)
+- SQL Server (LocalDB works for development)
+
+## Quick Start
+
+1. Clone the repository.
+2. Open `aurelia2-dotnet.sln` in Visual Studio and run the **Aurelia2.DotNet.Web.Api** profile, or start the backend from the command line:
+
+   ```
+   cd src\Aurelia2.DotNet.Web.Api
+   dotnet run
+   ```
+
+3. In Debug mode the backend automatically runs `npm install` (if needed) and starts the Vite dev server on `https://localhost:5002`. The browser opens to that URL.
+4. Use the **Create User Database** page (Configuration menu) to run EF Core migrations and create the Identity database.
+5. Register an account, log in, and browse the Product List to verify the full stack.
+
+Development URLs:
+
+| Service | URL |
+|---------|-----|
+| Backend API | `https://localhost:5001` |
+| Client (Vite) | `https://localhost:5002` |
+
 ## Project Structure
 
-- `src\client`: Aurelia 2 client application built with Vite.
-- `src\client\src\http-client`: Shared client HTTP infrastructure such as the configured Aurelia fetch client and XSRF handling.
-- `src\Aurelia2.DotNet.Web.Api`: ASP.NET Core Web API and Identity host.
-- `src\Aurelia2.DotNet.Web.Api\Controllers`: API controllers.
-- `src\Aurelia2.DotNet.Web.Api\Models`: View models and related backend models.
-- `src\Aurelia2.DotNet.Web.Api\Data`: Entity Framework Core context and migrations.
+```
+src/
+├── client/                          # Aurelia 2 + Vite frontend
+│   ├── src/
+│   │   ├── account/                 # Login, register, password reset pages
+│   │   ├── cookie/                  # Cookie helper service
+│   │   ├── home/                    # Welcome / About pages
+│   │   ├── http-client/             # Shared HTTP client + XSRF handling
+│   │   ├── nav-menu/                # Bootstrap nav-menu element + menu definitions
+│   │   ├── product/                 # Product list page (authorized)
+│   │   ├── routes.ts                # Route definitions
+│   │   ├── main.ts                  # Aurelia bootstrap
+│   │   └── app.ts                   # Root component + 401 redirect handler
+│   ├── vite.config.ts               # Dev server, HTTPS cert, /api proxy
+│   ├── eslint.config.mjs            # ESLint + typescript-eslint
+│   └── package.json
+└── Aurelia2.DotNet.Web.Api/         # ASP.NET Core backend
+    ├── Controllers/
+    │   ├── AccountController.cs     # Auth endpoints (login, register, etc.)
+    │   └── ProductController.cs     # Sample authorized endpoint
+    ├── Data/                        # EF Core DbContext + migrations
+    ├── Models/                      # View models
+    ├── SecurityHeadersMiddleware.cs  # CSP, HSTS, and other headers
+    ├── Program.cs                   # App configuration + auto-start client
+    └── appsettings.json             # Connection string, Serilog config
+```
 
-## Packages Summary
+## Architecture Overview
 
-- **[@aurelia/router](https://www.npmjs.com/package/@aurelia/router)**: Router for Aurelia applications.
-- **[@fortawesome/fontawesome-free](https://www.npmjs.com/package/@fortawesome/fontawesome-free)**: Free set of Font Awesome icons.
-- **[@popperjs/core](https://www.npmjs.com/package/@popperjs/core)**: Popper.js for tooltips and popovers.
-- **[aurelia](https://www.npmjs.com/package/aurelia)**: Aurelia framework.
-- **[bootstrap](https://www.npmjs.com/package/bootstrap)**: Bootstrap CSS framework.
-- **[vite](https://www.npmjs.com/package/vite)**: Packaging and development-time server.
-- **[eslint](https://www.npmjs.com/package/eslint)**: JavaScript and TypeScript linting.
-- **[typescript-eslint](https://typescript-eslint.io/)**: TypeScript-aware ESLint rules and parser support.
+```
+Browser ── https://localhost:5002 ──▶ Vite dev server ── /api/* proxy ──▶ ASP.NET Core (5001)
+                                                                              │
+                                                                        SQL Server
+                                                                       (Identity DB)
+```
 
-## Project-Specific Configuration
+- **Development**: The Vite dev server serves the Aurelia SPA and proxies `/api/*` requests to the backend. CORS is enabled so cookies flow between the two origins.
+- **Production**: The backend serves the built client from `wwwroot` and handles API routes directly. The Vite proxy and CORS are not used.
 
-### Aurelia View Configuration
+### Authentication Flow
 
-The routes and menus are defined in `src\client\src\routes.ts` and `src\client\src\nav-menu\menu-definitions.ts`. The `nav-menu` element builds a two-level Bootstrap navigation menu from those definitions.
+1. Client calls `GET /api/account/antiforgery-token` and caches the XSRF token.
+2. Every unsafe request (`POST`, `PUT`, `DELETE`, `PATCH`) includes the token in an `X-XSRF-TOKEN` header via the shared `HttpClientService` interceptor.
+3. Login/register use cookie-based ASP.NET Core Identity. On login, custom claims (`Host`, `VerifiedCustomer`) are added and the sign-in is refreshed so policy-protected endpoints work immediately.
+4. On a `401` response, the client resets auth state and redirects to the login page.
 
-### `vite.config.ts`
+## Extending the Project
 
-Configures Vite for the Aurelia 2 application, including:
+### Add a Client Page
 
-- HTTPS using the ASP.NET Core development certificate.
-- Dev server port `5002`.
-- Proxying `/api` requests to the backend on `https://localhost:5001`.
+1. Create `src/client/src/my-feature/my-page.ts` (component class) and `my-page.html` (template).
+2. Add a route entry in `src/client/src/routes.ts`.
+3. Optionally add a menu entry in `src/client/src/nav-menu/menu-definitions.ts` (supports nested items).
 
-### `tsconfig.json`
+### Add an API Endpoint
 
-Specifies the TypeScript compilation settings:
-  - Targeting `ES2022` and using `moduleResolution: "nodenext"`.
-  - Skips library checks (`skipLibCheck`).
-  - Excludes emitting compiled files in favor of Vite bundling.
+1. Create a new controller in `src/Aurelia2.DotNet.Web.Api/Controllers/` using the `[Route("api/[controller]")]` and `[ApiController]` attributes.
+2. Use `[Authorize]` or `[Authorize(Policy = "...")]` on actions that require authentication. Use `[AllowAnonymous]` on public actions.
+3. Antiforgery validation is applied globally via `AutoValidateAntiforgeryTokenAttribute`, so `POST`/`PUT`/`DELETE` actions are protected automatically.
 
-### ESLint
+### Add an Authorization Policy
 
-The client uses ESLint with `typescript-eslint` via `src\client\eslint.config.mjs`.
+1. Register the policy in `Program.cs` using `AddAuthorizationBuilder().AddPolicy(...)`.
+2. Apply `[Authorize(Policy = "YourPolicy")]` to the controller or action.
+3. See the existing `VerifiedCustomer` policy and `ProductController` for an example.
 
-Useful scripts:
+### Add an EF Core Entity / Migration
 
-- `npm run lint`
-- `npm run lint:fix`
+1. Add your entity class and update `ApplicationDbContext` in `src/Aurelia2.DotNet.Web.Api/Data/`.
+2. Generate a migration:
 
-### Shared HTTP Client
+   ```
+   dotnet ef migrations add <Name> --project src\Aurelia2.DotNet.Web.Api
+   ```
 
-The client uses `src\client\src\http-client\http-client-service.ts` to configure a shared Aurelia `IHttpClient` instance.
+   (requires the `Microsoft.EntityFrameworkCore.Design` package)
 
-That service is responsible for:
+### Calling the API from Client Code
 
-- attaching the `X-XSRF-TOKEN` header to unsafe requests
-- fetching antiforgery tokens from `GET /api/account/antiforgery-token`
-- handling the first `401 Unauthorized` response centrally
-- syncing login state and routing the client back to `login`
+Use the shared Aurelia `IHttpClient` (injected via `@inject(IHttpClient)`) with `credentials: 'include'`. The `HttpClientService` interceptor handles XSRF tokens and 401 redirects automatically.
 
+```ts
+const response = await this.httpClient.fetch('/api/your-endpoint', {
+    method: 'GET',
+    credentials: 'include'
+});
+```
 
-## Backend Requirements
+## Configuration Reference
 
-### Authentication Database
+### Connection String
 
-The project uses ASP.NET Core Identity for authentication. Ensure you have a SQL Server instance running and update the connection string in `src\Aurelia2.DotNet.Web.Api\appsettings.json`.
+Update `IdentityConnection` in `appsettings.json` to point to your SQL Server instance. The default uses LocalDB:
 
-### Run Database Migrations
+```
+Server=(localdb)\\mssqllocaldb;Database=aurelia2-dotnet-identity;Trusted_Connection=True
+```
 
-You can create the user database while running the application using the Create User Database page available from the configuration dropdown menu. That runs migrations from `AccountController`.
+### Email (SendGrid)
 
-The endpoint is now `POST /api/account/CreateUserDatabase`, so it is protected by antiforgery validation like the other unsafe API actions.
-
-The Create User Database page and all related code should be deleted before using this template in a production environment.
-
-You can also install the Entity Framework design-time package and run migrations from the command line.
-
-### Email Client Setup with SendGrid
-
-1. Log in or sign up for a [SendGrid](https://sendgrid.com/) account.
-2. Obtain your API key.
-3. Add the SendGrid integration used by your application.
-4. Update the `SendGrid` section in `src\Aurelia2.DotNet.Web.Api\appsettings.json`:
-
-   `{"SendGrid":{"Key":"YOUR_SENDGRID_API_KEY"}}`
-
-5. Register your email sender implementation in `Program.cs`.
-6. Use the configured sender from `AccountController`.
+1. Add your SendGrid API key to [User Secrets](https://learn.microsoft.com/aspnet/core/security/app-secrets): `{"SendGrid":{"Key":"YOUR_KEY"}}`.
+2. Register your `IEmailSender` implementation in `Program.cs`.
+3. When a key is present, Identity requires email confirmation before login.
 
 ### Antiforgery / XSRF
 
-The backend uses ASP.NET Core antiforgery protection for unsafe controller actions.
+- Tokens are issued by `GET /api/account/antiforgery-token`.
+- The client sends them back in the `X-XSRF-TOKEN` header.
+- `POST`/`PUT`/`DELETE` actions are validated automatically.
 
-Current behavior:
+### Security Headers
 
-- antiforgery request tokens are issued by `GET /api/account/antiforgery-token`
-- the client sends the token back in the `X-XSRF-TOKEN` header
-- unsafe API methods such as `POST` are validated automatically
+`SecurityHeadersMiddleware` sets `Content-Security-Policy`, `Strict-Transport-Security`, `X-Frame-Options`, `X-Content-Type-Options`, `Referrer-Policy`, and `Permissions-Policy`. Adjust the CSP if your app loads external scripts or styles.
 
-This is important because the application uses cookie-based authentication.
+### Logging
 
-## Running the Solution
+Serilog writes to `Logs/log.txt` with daily rolling files. The default level is `Information`; the Development profile overrides it to `Debug`.
 
-### Visual Studio
+## Client Scripts
 
-Run the `Aurelia2.DotNet.Web.Api` profile.
+Run from `src/client`:
 
-Current development URLs:
+| Command | Purpose |
+|---------|---------|
+| `npm run start` | Start Vite dev server (HTTPS, port 5002) |
+| `npm run build` | Production build to `dist/` |
+| `npm run serve` | Preview production build |
+| `npm run lint` | Run ESLint |
+| `npm run lint:fix` | Run ESLint with auto-fix |
 
-- Backend: `https://localhost:5001`
-- Client: `https://localhost:5002`
+## Publishing
 
-The backend startup profile opens the browser on `https://localhost:5002`.
+### PowerShell script (recommended)
 
-In `Debug`, `Program.cs` starts the Aurelia client automatically by running `npm run start` from `src\client`.
+```
+pwsh -File .\publish-self-contained.ps1 -Runtime win-x64
+```
 
-If `package.json` or `package-lock.json` changed, the backend startup logic will run `npm install` before starting Vite.
+The script runs `npm install`, builds the client, publishes the backend as self-contained, and copies client assets into `wwwroot`. Output defaults to `artifacts\publish\self-contained\<Runtime>`.
 
-When the first `401 Unauthorized` response is received by the client, the shared HTTP client resets login status and routes the user to the `login` page.
+Parameters: `-Configuration` (default `Release`), `-Runtime` (default `win-x64`), `-OutputDir` (optional exact path).
 
-### Manual client commands
+### Manual publish
 
-From `src\client`:
+```
+cd src\client && npm install && npm run build
+cd ..\Aurelia2.DotNet.Web.Api
+dotnet publish -c Release --self-contained --runtime win-x64 --output <dir>
+```
 
-- `npm run start`
-- `npm run build`
-- `npm run serve`
-- `npm run lint`
-- `npm run lint:fix`
-
-### `package.json` Scripts
-
-- **prestart**: Runs `aspnetcore-https.js` to set up HTTPS.
-- **start**: Starts the Vite development server.
-- **lint**: Runs ESLint over the client TypeScript sources.
-- **lint:fix**: Runs ESLint and applies safe automatic fixes.
-- **build**: Builds the project using Vite.
-- **serve**: Previews the built project using Vite.
-
-### `index.html`
-
-The client root `src\client\index.html` is the Vite entry page for development.
-
-Navigation uses Aurelia router `load` bindings and client API calls use absolute `/api/...` paths so routes and requests resolve correctly from nested pages such as `product-list`.
-
-### API Security Notes
-
-- `GET /api/account/antiforgery-token` issues the current request token.
-- Unsafe API calls are expected to use the shared configured `IHttpClient` so the XSRF header is attached automatically.
-- `Login` refreshes the sign-in after claims are added so policy-based endpoints can succeed immediately after login.
-
-### `aspnetcore-https.js`
-
-Sets up HTTPS for the client using the ASP.NET Core HTTPS development certificate.
-
-## Publishing the Project
-
-Publish the backend from `src\Aurelia2.DotNet.Web.Api`.
-
-### PowerShell publish script
-
-The repository includes `publish-self-contained.ps1` at the repo root.
-
-The script accepts these parameters:
-
-- `-Configuration` default: `Release`
-- `-Runtime` default: `win-x64`
-- `-OutputDir` optional: exact final publish folder
-
-The script will:
-
-- run `npm install` in `src\client`
-- build the Aurelia client with `npm run build`
-- publish `Aurelia2.DotNet.Web.Api` as a self-contained deployment
-- copy the client `dist` output into the published `wwwroot`
-
-Example script usage:
-
-`pwsh -File .\publish-self-contained.ps1 -Runtime win-x64`
-
-`pwsh -File .\publish-self-contained.ps1 -Configuration Release -Runtime linux-x64`
-
-`pwsh -File .\publish-self-contained.ps1 -Runtime win-x64 -OutputDir .\artifacts\custom-publish`
-
-If `-OutputDir` is omitted, the final publish folder is:
-
-`artifacts\publish\self-contained\<Runtime>`
-
-For example, with the defaults, output goes to:
-
-`artifacts\publish\self-contained\win-x64`
-
-If `-OutputDir` is supplied, that path is used as the exact final publish folder.
-
-For example:
-
-`pwsh -File .\publish-self-contained.ps1 -Runtime win-x64 -OutputDir C:\temp\publish`
-
-publishes directly to:
-
-`C:\temp\publish`
-
-### Direct `dotnet publish`
-
-If you do **not** want to use the script, you can publish the backend directly instead.
-
-These commands only publish the API project. They do **not** run the client build or copy client assets for you.
-
-`dotnet publish -c Release .\Aurelia2.DotNet.Web.Api.csproj`
-
-or
-
-`dotnet publish -c Release --self-contained --output <output-dir> --runtime win-x64 .\Aurelia2.DotNet.Web.Api.csproj`
-
-### Important
-
-The project file no longer runs `npm install` or `npm run build` during publish. If you want to deploy the Aurelia client as static files with the backend, build the client separately from `src\client` and include the generated assets as part of your deployment process.
+Then copy `src\client\dist\*` into `<dir>\wwwroot`.
 
 ### Running published output
 
-Set the backend URL before starting the published app:
+```
+set ASPNETCORE_URLS=https://localhost:5001
+dotnet <output-dir>\Aurelia2.DotNet.Web.Api.dll
+```
 
-`set ASPNETCORE_URLS=https://localhost:5001`
+## Before Going to Production
 
-For the in-place version, run:
+- Delete the **Create User Database** page and its endpoint (debug-only scaffolding).
+- Replace the LocalDB connection string with your production database.
+- Configure a real `IEmailSender` implementation if you need email confirmation.
+- Review `SecurityHeadersMiddleware` and adjust the `Content-Security-Policy` for your deployment.
+- Store secrets (connection strings, API keys) using User Secrets, environment variables, or a vault — never in `appsettings.json`.
 
-`dotnet .\bin\Release\net10.0\Aurelia2.DotNet.Web.Api.dll`
+## License
 
-For the published output directory, run:
-
-`dotnet <output-dir>\Aurelia2.DotNet.Web.Api.dll`
-
-API base URL: `https://localhost:5001`
+[MIT](LICENSE)
