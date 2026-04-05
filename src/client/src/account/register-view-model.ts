@@ -3,4 +3,5 @@
     password: string;
     confirmPassword: string;
     confirmEmailPage: string;
+    turnstileToken: string;
 }

@@ -17,14 +17,22 @@
                         &nbsp;Remember me?
                     </label>
                 </div>
+                <div class="mb-3">
+                    <turnstile turnstile-verified.trigger="onTurnstileSuccess($event)"></turnstile>
+                </div>
+                <div class="mb-3" if.bind="errors.length > 0">
+                    <div class="alert alert-danger mb-0">
+                        <div repeat.for="error of errors">${error}</div>
+                    </div>
+                </div>
                 <div class="mb-2">
                     <button type="submit" class="w-50 btn btn-lg btn-primary">Log in</button>
                 </div>
                 <div class="mb-2">
-                    <a href="../request-password-reset">Forgot your password?</a>
+                    <a load="/request-password-reset">Forgot your password?</a>
                 </div>
                 <div class="mb-1">
-                    <a href="../register">Register as a new user?</a>
+                    <a load="/register">Register as a new user?</a>
                 </div>
             </form>
         </div>

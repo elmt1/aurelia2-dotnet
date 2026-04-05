@@ -10,7 +10,24 @@ export class AuthState {
     constructor(private readonly cookieService: CookieService) {
         this.loadState();
         this.isAuthenticatedChanged();
+        this.checkServerAuthState();
         eventEmitter.on('resetLoginStatus', this.resetLoginStatus.bind(this));
+    }
+
+    private async checkServerAuthState(): Promise<void> {
+        try {
+            const response = await fetch('/api/account/IsAuthenticated', {
+                method: 'GET',
+                credentials: 'include'
+            });
+
+            if (response.ok) {
+                const result = await response.json();
+                this.isAuthenticated = result.isAuthenticated;
+            }
+        } catch {
+            // Server unreachable; keep local state
+        }
     }
 
     private isAuthenticatedChanged(): void {

@@ -110,6 +110,7 @@ public class Program
             }
 
             builder.Services.AddHttpContextAccessor();
+            builder.Services.AddHttpClient<TurnstileVerificationService>();
             builder.Services.AddScoped<ClaimsPrincipal>(s =>
             {
                 var httpContextAccessor = s.GetService<IHttpContextAccessor>()

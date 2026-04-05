@@ -25,6 +25,7 @@ namespace Aurelia2.DotNet.Web.Api.Controllers
         private readonly ILogger<AccountController> logger;
         private readonly IEmailSender emailSender;
         private readonly IAntiforgery antiforgery;
+        private readonly TurnstileVerificationService turnstileService;
 
 
         public AccountController(
@@ -34,7 +35,8 @@ namespace Aurelia2.DotNet.Web.Api.Controllers
             SignInManager<IdentityUser> signInManager,
             ILogger<AccountController> logger,
             IEmailSender emailSender,
-            IAntiforgery antiforgery)
+            IAntiforgery antiforgery,
+            TurnstileVerificationService turnstileService)
         {
             this.context = context;
             this.userManager = userManager;
@@ -44,6 +46,7 @@ namespace Aurelia2.DotNet.Web.Api.Controllers
             this.logger = logger;
             this.emailSender = emailSender;
             this.antiforgery = antiforgery;
+            this.turnstileService = turnstileService;
         }
 
         /// <summary>Runs the migrations, this is ONLY FOR TESTING.</summary>
@@ -83,6 +86,15 @@ namespace Aurelia2.DotNet.Web.Api.Controllers
         {
             if (ModelState.IsValid)
             {
+                var remoteIp = HttpContext.Connection.RemoteIpAddress?.ToString();
+                var turnstileValid = await turnstileService.VerifyTokenAsync(model.TurnstileToken, remoteIp);
+                if (!turnstileValid)
+                {
+                    ModelState.AddModelError(string.Empty, "CAPTCHA verification failed. Please try again.");
+                    var captchaErrors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToArray();
+                    return BadRequest(captchaErrors);
+                }
+
                 var result = await signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, lockoutOnFailure: false);
                 if (result.Succeeded)
                 {
@@ -140,6 +152,15 @@ namespace Aurelia2.DotNet.Web.Api.Controllers
         {
             if (ModelState.IsValid)
             {
+                var remoteIp = HttpContext.Connection.RemoteIpAddress?.ToString();
+                var turnstileValid = await turnstileService.VerifyTokenAsync(model.TurnstileToken, remoteIp);
+                if (!turnstileValid)
+                {
+                    ModelState.AddModelError(string.Empty, "CAPTCHA verification failed. Please try again.");
+                    var captchaErrors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToArray();
+                    return BadRequest(captchaErrors);
+                }
+
                 var user = CreateUser();
 
                 await userStore.SetUserNameAsync(user, model.Email, CancellationToken.None);
@@ -176,7 +197,34 @@ namespace Aurelia2.DotNet.Web.Api.Controllers
 
                 foreach (var error in result.Errors)
                 {
-                    ModelState.AddModelError(string.Empty, error.Description);
+                    if (error.Code == "DuplicateUserName" || error.Code == "DuplicateEmail")
+                    {
+                        ModelState.AddModelError(nameof(model.Email), "Registration is not available for this email address.");
+                    }
+                    else if (error.Code == "PasswordTooShort")
+                    {
+                        ModelState.AddModelError(nameof(model.Password), "Password is too short.");
+                    }
+                    else if (error.Code == "PasswordRequiresNonAlphanumeric")
+                    {
+                        ModelState.AddModelError(nameof(model.Password), "Password must contain a non-alphanumeric character.");
+                    }
+                    else if (error.Code == "PasswordRequiresDigit")
+                    {
+                        ModelState.AddModelError(nameof(model.Password), "Password must contain a digit.");
+                    }
+                    else if (error.Code == "PasswordRequiresUpper")
+                    {
+                        ModelState.AddModelError(nameof(model.Password), "Password must contain an uppercase letter.");
+                    }
+                    else if (error.Code == "PasswordRequiresLower")
+                    {
+                        ModelState.AddModelError(nameof(model.Password), "Password must contain a lowercase letter.");
+                    }
+                    else
+                    {
+                        ModelState.AddModelError(string.Empty, "Registration failed. Please check your input.");
+                    }
                 }
             }
 
