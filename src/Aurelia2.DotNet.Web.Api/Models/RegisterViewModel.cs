@@ -19,5 +19,8 @@ namespace Aurelia2.DotNet.Web.Api.Models
 
         [DataType(DataType.Text)]
         public required string ConfirmEmailPage { get; set; }
+
+        [Required]
+        public required string TurnstileToken { get; set; }
     }
 }

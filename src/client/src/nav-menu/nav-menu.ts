@@ -47,6 +47,6 @@ export class NavMenu {
 
     public async logout() {
         await this.accountService.logout();
-        void this.router.load('home');
+        void this.router.load('/home');
     }
 }

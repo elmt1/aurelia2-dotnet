@@ -7,9 +7,10 @@ import type { ILoginViewModel } from "./login-view-model.js";
 
 @inject(AccountService, IRouter, CookieService)
 export class LoginPage {
-    private readonly loginViewModel: ILoginViewModel = { email: '', password: '', rememberMe: false };
+    private readonly loginViewModel: ILoginViewModel = { email: '', password: '', rememberMe: false, turnstileToken: '' };
     private emailInput: HTMLInputElement;
     private passwordInput: HTMLInputElement;
+    private errors: string[] = [];
 
     constructor(
         private readonly accountService: AccountService,
@@ -54,7 +55,18 @@ export class LoginPage {
         }
     }
 
+    private onTurnstileSuccess(event: CustomEvent): void {
+        this.loginViewModel.turnstileToken = event.detail.token;
+    }
+
     async login() {
+        this.errors = [];
+
+        if (!this.loginViewModel.turnstileToken) {
+            this.errors = ['Please complete the CAPTCHA.'];
+            return;
+        }
+
         try {
             const response = await this.accountService.login(this.loginViewModel);
             console.log('Login successful:', response);
@@ -74,9 +86,13 @@ export class LoginPage {
                 return;
             }
 
-            void this.router.load('home');
+            void this.router.load('/home');
         } catch (error) {
-            console.error('Login failed:', error);
+            if (Array.isArray(error)) {
+                this.errors = error;
+            } else {
+                this.errors = ['Login failed.'];
+            }
         }
     }
 }

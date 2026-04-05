@@ -6,8 +6,11 @@ import type { IRequestPasswordResetViewModel } from "./request-password-reset-vi
 
 @inject(AccountService, IRouter)
 export class RequestPasswordResetPage {
-    private readonly requestPasswordResetModel: IRequestPasswordResetViewModel;
+    private readonly requestPasswordResetModel: IRequestPasswordResetViewModel = {
+        email: '', passwordResetPage: '', turnstileToken: ''
+    };
     private emailInput: HTMLInputElement;
+    private errors: string[] = [];
 
     constructor(private readonly accountService: AccountService, private readonly router: IRouter) { }
     private getBaseUrl(): string {
@@ -22,7 +25,18 @@ export class RequestPasswordResetPage {
         }
     }
 
+    private onTurnstileSuccess(event: CustomEvent): void {
+        this.requestPasswordResetModel.turnstileToken = event.detail.token;
+    }
+
     public async requestReset() {
+        this.errors = [];
+
+        if (!this.requestPasswordResetModel.turnstileToken) {
+            this.errors = ['Please complete the CAPTCHA.'];
+            return;
+        }
+
         try {
             // Retrieve the reset password route
             const resetPasswordRoute = routes.find(route => route.id === 'reset-password');
@@ -34,8 +48,11 @@ export class RequestPasswordResetPage {
             alert('Password reset link sent to your email.');
 
         } catch (error) {
-            console.error('Error sending password reset link:', error);
-            alert('Failed to send password reset link.');
+            if (Array.isArray(error)) {
+                this.errors = error;
+            } else {
+                this.errors = ['Failed to send password reset link.'];
+            }
         }
     }
 }

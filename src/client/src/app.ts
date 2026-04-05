@@ -20,7 +20,7 @@ export class App {
                 ?? `${window.location.pathname}${window.location.search}${window.location.hash}`;
 
             HttpClientService.storeReturnUrl(returnUrl);
-            void this.router.load(`login?returnUrl=${encodeURIComponent(returnUrl)}`);
+            void this.router.load(`/login?returnUrl=${encodeURIComponent(returnUrl)}`);
         }
     }
 }

@@ -13,5 +13,7 @@ namespace Aurelia2.DotNet.Web.Api.Models
         public required string Password { get; set; }
 
         public bool RememberMe { get; set; }
+
+        public string TurnstileToken { get; set; } = string.Empty;
     }
 }

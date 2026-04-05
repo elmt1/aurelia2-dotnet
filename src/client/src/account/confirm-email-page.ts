@@ -39,6 +39,6 @@ export class ConfirmEmailPage {
     }
 
     public logIn() {
-        void this.router.load('login');
+        void this.router.load('/login');
     }
 }

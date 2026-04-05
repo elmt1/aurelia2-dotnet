@@ -18,5 +18,7 @@ namespace Aurelia2.DotNet.Web.Api.Models
         [DataType(DataType.Password)]
         [Compare("NewPassword", ErrorMessage = "The new password and confirmation password do not match.")]
         public required string ConfirmPassword { get; set; }
+
+        public string TurnstileToken { get; set; } = string.Empty;
     }
 }

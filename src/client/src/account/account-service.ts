@@ -76,24 +76,27 @@ export class AccountService {
     }
 
     async register(registerViewModel: IRegisterViewModel): Promise<Response> {
-        try {
-            const response = await this.httpClient.fetch('/api/account/register', {
-                method: 'POST',
-                body: json(registerViewModel),
-                credentials: 'include'
-            });
+        const response = await this.httpClient.fetch('/api/account/register', {
+            method: 'POST',
+            body: json(registerViewModel),
+            credentials: 'include'
+        });
 
-            if (!response.ok) {
-                throw new Error('Register failed');
-            }
-
-            await HttpClientService.refreshXsrfToken();
-            return response;
-
-        } catch (error) {
-            console.error('Error during register:', error);
-            throw error;
+        if (!response.ok) {
+            let messages: string[] = ['Registration failed.'];
+            try {
+                const body = await response.json();
+                if (Array.isArray(body)) {
+                    messages = body;
+                }
+            } catch { /* response body was not JSON */ }
+            throw messages;
         }
+
+        await HttpClientService.refreshXsrfToken();
+        HttpClientService.resetUnauthorizedHandling();
+        this.authState.isAuthenticated = true;
+        return response;
     }
 
     async confirmEmail(userId: string, code: string): Promise<boolean> {
