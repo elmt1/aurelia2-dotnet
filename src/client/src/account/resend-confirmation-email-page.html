@@ -1,0 +1,33 @@
+<template>
+    <div class="container">
+        <br />
+        <div class="mt-5 bg-body-secondary position-relative p-5 text-muted bg-body border border-dashed rounded-5">
+            <form class="form-horizontal" submit.trigger="resendConfirmationEmail()">
+                <p>Enter your email address and, if the account is waiting for confirmation, a new confirmation email will be sent.</p>
+                <div class="form-floating mb-3">
+                    <input id="email" class="form-control" aria-required="true" autocomplete="on" type="email" placeholder="name@example.com" value.bind="resendConfirmationEmailModel.email" ref="emailInput">
+                    <label for="email">Email address</label>
+                </div>
+                <div class="mb-3">
+                    <turnstile turnstile-verified.trigger="onTurnstileSuccess($event)"></turnstile>
+                </div>
+                <div class="mb-3" if.bind="errors.length > 0">
+                    <div class="alert alert-danger mb-0">
+                        <div repeat.for="error of errors">${error}</div>
+                    </div>
+                </div>
+                <div class="mb-3" if.bind="sent === true">
+                    <div class="alert alert-success mb-0">
+                        If the account is waiting for confirmation, a new confirmation email has been sent.
+                    </div>
+                </div>
+                <div class="mb-2">
+                    <button type="submit" class="w-50 btn btn-lg btn-primary">Resend Confirmation Email</button>
+                </div>
+                <div class="mb-1">
+                    <a load="../login">Return to login</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</template>

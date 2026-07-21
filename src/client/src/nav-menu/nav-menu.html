@@ -11,7 +11,7 @@
                 <template repeat.for="menuItem of menuDefinition">
                     <!-- Top-level menu item -->
                     <template if.bind="!menuItem.children || menuItem.children.length === 0">
-                        <li if.bind="!menuItem.route.data.auth || menuItem.route.data.auth.indexOf(accountService.authState.accessState.role) > -1" 
+                        <li if.bind="canShow(menuItem)" 
                             class="nav-item" class.bind="menuItem.isActive ? 'active' : ''">
                             <a load.bind="'/' + menuItem.route.path" class="nav-link" click.trigger="setActive(menuItem)">
                                 <i class="${menuItem.icon}"></i>&nbsp;&nbsp;${menuItem.title || menuItem.route.title}
@@ -26,7 +26,7 @@
                             </a>
                             <ul class="dropdown-menu">
                                 <template repeat.for="child of menuItem.children">
-                                    <li if.bind="!child.route.data.auth || child.route.data.auth.indexOf(accountService.authState.accessState.role) > -1"
+                                    <li if.bind="canShow(child)"
                                         class="nav-item" class.bind="child.isActive ? 'active' : ''">
                                         <a load.bind="'/' + child.route.path" class="dropdown-item" click.trigger="setActive(child)">
                                             <i class="${child.icon}"></i>&nbsp;&nbsp;${child.title || child.route.title}

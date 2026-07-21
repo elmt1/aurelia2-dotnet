@@ -13,9 +13,9 @@ export class HttpClientService {
             return;
         }
 
-        httpClient.configure(config => {
+        httpClient.configure((config: { withInterceptor(interceptor: { request(request: Request): Promise<Request>; response(response: Response): Promise<Response> }): void }) => {
             config.withInterceptor({
-                async request(request) {
+                async request(request: Request): Promise<Request> {
                     if (HttpClientService.shouldAttachXsrfToken(request)) {
                         await HttpClientService.ensureXsrfToken();
                         if (HttpClientService.xsrfToken) {
@@ -25,7 +25,7 @@ export class HttpClientService {
 
                     return request;
                 },
-                async response(response) {
+                async response(response: Response): Promise<Response> {
                     if (response.status === 401 && !HttpClientService.unauthorizedHandled) {
                         HttpClientService.unauthorizedHandled = true;
                         eventEmitter.emit('resetLoginStatus');
@@ -86,6 +86,10 @@ export class HttpClientService {
         }
 
         return returnUrl;
+    }
+
+    public static clearReturnUrl(): void {
+        sessionStorage.removeItem(HttpClientService.returnUrlStorageKey);
     }
 
     public static peekReturnUrl(): string | null {

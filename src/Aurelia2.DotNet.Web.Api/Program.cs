@@ -1,4 +1,6 @@
+using Aurelia2.DotNet.Web.Api.Authorization;
 using Aurelia2.DotNet.Web.Api.Data;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -31,6 +33,10 @@ public class Program
 
             var builder = WebApplication.CreateBuilder(args);
 
+#if DEBUG
+            ConfigureDebugConfiguration(builder);
+#endif
+
             Log.Information("Running " + (builder.Environment.IsProduction() ? "Production " : "Development ") + "build");
 
             builder.Host.UseSerilog();
@@ -44,12 +50,16 @@ public class Program
             var emailConfirmation = builder.Configuration.GetValue<string>("SendGrid:Key") != null;
             if (emailConfirmation)
             {
+                Log.Information("Email confirmation is enabled because SendGrid is configured.");
                 builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+                    .AddRoles<IdentityRole>()
                     .AddEntityFrameworkStores<ApplicationDbContext>();
             }
             else
             {
+                Log.Information("Email confirmation is disabled because SendGrid is not configured. Registered users will be auto-confirmed.");
                 builder.Services.AddDefaultIdentity<IdentityUser>()
+                    .AddRoles<IdentityRole>()
                     .AddEntityFrameworkStores<ApplicationDbContext>();
             }
 
@@ -75,9 +85,12 @@ public class Program
                 };
             });
 
+            builder.Services.AddSingleton<IAuthorizationHandler, RoleAuthorizationHandler>();
             builder.Services.AddAuthorizationBuilder()
-                .AddPolicy("VerifiedCustomer", policy =>
-                    policy.RequireClaim("VerifiedCustomer"));
+                .AddPolicy(Policy.PrincipalAccess, policy => policy.RequireMinimumRole(Role.Principal))
+                .AddPolicy(Policy.AdminAccess, policy => policy.RequireMinimumRole(Role.Admin))
+                .AddPolicy(Policy.VerifiedUserAccess, policy => policy.RequireMinimumRole(Role.VerifiedUser))
+                .AddPolicy(Policy.RegisteredUserAccess, policy => policy.RequireMinimumRole(Role.RegisteredUser));
 
             builder.Services.AddAntiforgery(options =>
             {
@@ -110,6 +123,7 @@ public class Program
             }
 
             builder.Services.AddHttpContextAccessor();
+            builder.Services.AddMemoryCache();
             builder.Services.AddHttpClient<TurnstileVerificationService>();
             builder.Services.AddScoped<ClaimsPrincipal>(s =>
             {
@@ -131,10 +145,11 @@ public class Program
 
             var app = builder.Build();
 
+            EnsureRolesAsync(app.Services).GetAwaiter().GetResult();
+
             if (app.Environment.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                app.MapOpenApi();
             }
 
             app.UseHttpsRedirection();
@@ -177,7 +192,44 @@ public class Program
         }
     }
 
+    private static async Task EnsureRolesAsync(IServiceProvider services)
+    {
+        using var scope = services.CreateScope();
+
+        var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+
+        foreach (var role in RoleExtensions.All())
+        {
+            var roleName = role.Name();
+            if (await roleManager.RoleExistsAsync(roleName))
+            {
+                continue;
+            }
+
+            var result = await roleManager.CreateAsync(new IdentityRole(roleName));
+            if (!result.Succeeded)
+            {
+                var errors = string.Join(", ", result.Errors.Select(error => error.Description));
+                throw new InvalidOperationException($"Failed to create role '{roleName}': {errors}");
+            }
+        }
+    }
+
 #if DEBUG
+    private static void ConfigureDebugConfiguration(WebApplicationBuilder builder)
+    {
+        if (!builder.Environment.IsDevelopment())
+        {
+            return;
+        }
+
+        builder.Configuration
+            .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+            .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true);
+
+        Log.Information("Debug configuration override loaded from appsettings.");
+    }
+
     private static Process? StartClientIfNeeded()
     {
         const int port = 5002;

@@ -1,6 +1,7 @@
 ﻿import { inject } from '@aurelia/kernel';
 import { IRouter } from '@aurelia/router';
 import { AccountService } from '../account/account-service.js';
+import { eventEmitter } from '../event-emitter.js';
 import type { Route } from '../routes.js';
 import { routes } from '../routes.js';
 import type { MenuDefinition } from './menu-definitions.js';
@@ -12,9 +13,16 @@ export class NavMenu {
 
     constructor(
         private readonly accountService: AccountService,
-        private readonly router: IRouter) { }
+        private readonly router: IRouter) {
+        eventEmitter.on('authStateChanged', this.refreshMenu.bind(this));
+    }
 
     public async binding() {
+        await this.accountService.authState.refreshAuthState();
+        this.refreshMenu();
+    }
+
+    private refreshMenu(): void {
         this.menuDefinition = this.buildMenu(menuDefinitions);
     }
 
@@ -48,5 +56,9 @@ export class NavMenu {
     public async logout() {
         await this.accountService.logout();
         void this.router.load('/home');
+    }
+
+    public canShow(menuItem: MenuDefinition): boolean {
+        return this.accountService.authState.hasRequiredRole(menuItem.route?.data?.auth);
     }
 }

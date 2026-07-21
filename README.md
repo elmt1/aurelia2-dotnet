@@ -1,6 +1,6 @@
 # aurelia2-dotnet
 
-A starter template for building web applications with an **Aurelia 2** (TypeScript / Vite) frontend and an **ASP.NET Core 10** backend. It includes cookie-based authentication with ASP.NET Core Identity, XSRF protection, security headers, claims-based authorization, and a Bootstrap navigation menu — ready to extend with your own pages and API endpoints.
+A starter template for building web applications with an **Aurelia 2** (TypeScript / Vite) frontend and an **ASP.NET Core 10** backend. It includes cookie-based authentication with ASP.NET Core Identity, role-based authorization, XSRF protection, security headers, an admin user-list page, and a Bootstrap navigation menu — ready to extend with your own pages and API endpoints.
 
 ## Prerequisites
 
@@ -20,7 +20,8 @@ A starter template for building web applications with an **Aurelia 2** (TypeScri
 
 3. In Debug mode the backend automatically runs `npm install` (if needed) and starts the Vite dev server on `https://localhost:5002`. The browser opens to that URL.
 4. Use the **Create User Database** page (Configuration menu) to run EF Core migrations and create the Identity database.
-5. Register an account, log in, and browse the Product List to verify the full stack.
+5. Register the account configured by `BootstrapRole` to receive the initial `Principal` role, or register another account to receive `RegisteredUser`.
+6. Log in, browse the Product List, and use **Configuration > Admin User List** with an `Admin` or `Principal` account to verify the full stack.
 
 Development URLs:
 
@@ -35,7 +36,7 @@ Development URLs:
 src/
 ├── client/                          # Aurelia 2 + Vite frontend
 │   ├── src/
-│   │   ├── account/                 # Login, register, password reset pages
+│   │   ├── account/                 # Login, register, password reset, and admin user-list pages
 │   │   ├── cookie/                  # Cookie helper service
 │   │   ├── home/                    # Welcome / About pages
 │   │   ├── http-client/             # Shared HTTP client + XSRF handling
@@ -49,7 +50,7 @@ src/
 │   └── package.json
 └── Aurelia2.DotNet.Web.Api/         # ASP.NET Core backend
     ├── Controllers/
-    │   ├── AccountController.cs     # Auth endpoints (login, register, etc.)
+    │   ├── AccountController.cs     # Auth and admin user-management endpoints
     │   └── ProductController.cs     # Sample authorized endpoint
     ├── Data/                        # EF Core DbContext + migrations
     ├── Models/                      # View models
@@ -74,8 +75,16 @@ Browser ── https://localhost:5002 ──▶ Vite dev server ── /api/* pr
 
 1. Client calls `GET /api/account/antiforgery-token` and caches the XSRF token.
 2. Every unsafe request (`POST`, `PUT`, `DELETE`, `PATCH`) includes the token in an `X-XSRF-TOKEN` header via the shared `HttpClientService` interceptor.
-3. Login/register use cookie-based ASP.NET Core Identity. On login, custom claims (`Host`, `VerifiedCustomer`) are added and the sign-in is refreshed so policy-protected endpoints work immediately.
+3. Login/register use cookie-based ASP.NET Core Identity. Application roles are assigned through ASP.NET Core Identity roles, custom claims (`Host`, `VerifiedCustomer`) are added, and the sign-in is refreshed so policy-protected endpoints work immediately.
 4. On a `401` response, the client resets auth state and redirects to the login page.
+
+### Roles and Administration
+
+- The application seeds four roles on startup: `Principal`, `Admin`, `VerifiedUser`, and `RegisteredUser`.
+- Role checks are hierarchical. `Principal` has the highest access, followed by `Admin`, `VerifiedUser`, and `RegisteredUser`.
+- The email address configured by `BootstrapRole` receives the `Principal` role the first time that user is registered or signs in. Other users receive `RegisteredUser` by default.
+- `GET /api/account/CurrentUser` returns the current user's highest application role so the client can protect routes and menu items.
+- **Configuration > Admin User List** is available to users with at least the `Admin` role. It lists Identity users and supports deleting users, confirming email addresses, resetting lockouts, sending password reset emails, and saving role changes.
 
 ## Extending the Project
 
@@ -93,9 +102,18 @@ Browser ── https://localhost:5002 ──▶ Vite dev server ── /api/* pr
 
 ### Add an Authorization Policy
 
-1. Register the policy in `Program.cs` using `AddAuthorizationBuilder().AddPolicy(...)`.
-2. Apply `[Authorize(Policy = "YourPolicy")]` to the controller or action.
-3. See the existing `VerifiedCustomer` policy and `ProductController` for an example.
+1. Add the role to `Authorization/Role.cs` if the policy needs a new application role.
+2. Register the policy in `Program.cs` using `AddAuthorizationBuilder().AddPolicy(...)` and `RequireMinimumRole(...)`.
+3. Apply `[Authorize(Policy = "YourPolicy")]` to the controller or action.
+4. Add matching route `data.auth` and menu expectations on the client when the policy protects a page.
+
+Existing policies are `PrincipalAccess`, `AdminAccess`, `VerifiedUserAccess`, and `RegisteredUserAccess`.
+
+### Add an Admin User Action
+
+1. Add the protected action to `AccountController` with `[Authorize(Policy = Policy.AdminAccess)]`.
+2. Add a method to `src/client/src/account/account-service.ts` that calls the endpoint through the shared HTTP client.
+3. Wire the action into `src/client/src/account/admin-user-list-page.ts` and `admin-user-list-page.html`.
 
 ### Add an EF Core Entity / Migration
 
@@ -128,6 +146,10 @@ Update `IdentityConnection` in `appsettings.json` to point to your SQL Server in
 ```
 Server=(localdb)\\mssqllocaldb;Database=aurelia2-dotnet-identity;Trusted_Connection=True
 ```
+
+### Bootstrap Role
+
+Set `BootstrapRole` in `appsettings.json`, `appsettings.Development.json`, User Secrets, or deployment configuration to the email address that should receive the initial `Principal` role. Keep this value to a single email address; use the Admin User List page to assign additional admins after the bootstrap account is available.
 
 ### Email (SendGrid)
 
@@ -197,6 +219,21 @@ dotnet <output-dir>\Aurelia2.DotNet.Web.Api.dll
 - Configure a real `IEmailSender` implementation if you need email confirmation.
 - Review `SecurityHeadersMiddleware` and adjust the `Content-Security-Policy` for your deployment.
 - Store secrets (connection strings, API keys) using User Secrets, environment variables, or a vault — never in `appsettings.json`.
+
+## Development configuration precedence
+
+When the API is running in a `DEBUG` build and the ASP.NET Core environment is `Development`, the application intentionally reloads `appsettings.json` and `appsettings.Development.json` after the default ASP.NET Core configuration providers are registered.
+
+This means project-local JSON settings take precedence over machine-level environment variables during local debugging. This prevents global environment variables shared across projects from accidentally overriding local development settings such as `Turnstile:SecretKey`.
+
+Effective local DEBUG Development precedence for duplicate keys is:
+
+1. default ASP.NET Core configuration sources
+2. environment variables
+3. `appsettings.json`
+4. `appsettings.Development.json`
+
+Production/release configuration behavior is unchanged. Production secrets should continue to come from environment variables or the deployment environment rather than checked-in JSON files.
 
 ## License
 

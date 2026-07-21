@@ -29,10 +29,13 @@
                     <button type="submit" class="w-50 btn btn-lg btn-primary">Log in</button>
                 </div>
                 <div class="mb-2">
-                    <a load="/request-password-reset">Forgot your password?</a>
+                    <a load="../request-password-reset">Forgot your password?</a>
+                </div>
+                <div class="mb-2" if.bind="accountService.authState.emailConfirmationEnabled">
+                    <a load="../resend-confirmation-email">Resend confirmation email?</a>
                 </div>
                 <div class="mb-1">
-                    <a load="/register">Register as a new user?</a>
+                    <a load="../register">Register as a new user?</a>
                 </div>
             </form>
         </div>
