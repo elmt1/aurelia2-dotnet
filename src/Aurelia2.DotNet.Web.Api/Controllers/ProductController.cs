@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Aurelia2.DotNet.Web.Api.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Aurelia2.DotNet.Web.Api.Controllers
@@ -8,7 +9,7 @@ namespace Aurelia2.DotNet.Web.Api.Controllers
     public class ProductController : ControllerBase
     {
         [HttpGet("ProductList")]
-        [Authorize(Policy = "VerifiedCustomer")]
+        [Authorize(Policy = Policy.RegisteredUserAccess)]
         public IActionResult ProductList()
         {
             var products = GenerateRandomProducts(10);

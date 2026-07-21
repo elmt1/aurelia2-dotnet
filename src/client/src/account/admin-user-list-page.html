@@ -1,0 +1,119 @@
+<template>
+    <div class="container-fluid">
+        <h3>Admin User List</h3>
+        <form class="row g-3">
+            <fieldset class="d-flex">
+                <legend class="form-label col-auto fs-5 mt-1 me-2">Filter:</legend>
+                <div class="col-auto me-2">
+                    <input class="form-control" type="text" aria-label="Email" placeholder="Email" change.trigger="emailFilterChanged($event.target.value)" value.bind="filters[0].value">
+                </div>
+            </fieldset>
+        </form>
+        <br />
+        <table if.bind="users"
+               class="table"
+               aurelia-table="data.bind: users; display-data.bind: $displayData; filters.bind: filters;
+                              current-page.bind: currentPage; page-size.bind: pageSize; total-items.bind: totalItems; api.bind: tableApi;">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th aut-sort="key: email" aut-sort-icon>Email</th>
+                    <th aut-sort="key: role" aut-sort-icon>Role</th>
+                    <th aut-sort="key: emailConfirmed" aut-sort-icon>Email Confirmed</th>
+                    <th aut-sort="key: lockoutEnabled" aut-sort-icon>Lockout Enabled</th>
+                    <th aut-sort="key: isLockedOut" aut-sort-icon>Locked Out</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr repeat.for="user of $displayData">
+                    <td>
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-label="User Admin Actions">
+                                <i class="fas fa-gear"></i> <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu" role="menu">
+                                <li class="dropdown-item">
+                                    <a class="link-primary"
+                                       click.trigger="deleteUser(user.id)"
+                                       data-toggle="tooltip"
+                                       title="Delete the User; Note: This only deletes the user's account information, the user will not be deleted, use the Users list to complete that work.">
+                                        Delete
+                                    </a>
+                                </li>
+                                <li class="dropdown-item" if.bind="user.isLockedOut" role="menuitem">
+                                    <a class="link-primary"
+                                       click.trigger="resetLockout(user.id)"
+                                       data-toggle="tooltip"
+                                       title="Reset lockout for this user">
+                                        Reset Lockout
+                                    </a>
+                                </li>
+                                <li class="dropdown-item" if.bind="!user.emailConfirmed" role="menuitem">
+                                    <a class="link-primary"
+                                       click.trigger="confirmEmail(user.id)"
+                                       data-toggle="tooltip"
+                                       title="Confirm Email for this user">
+                                        Confirm Email
+                                    </a>
+                                </li>
+                                <li class="dropdown-item">
+                                    <a class="link-primary"
+                                       click.trigger="requestPasswordReset(user.email)"
+                                       data-toggle="tooltip"
+                                       title="Send password reset email to this user"
+                                       role="menuitem">
+                                        Reset Password
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </td>
+
+                    <td>${user.email}</td>
+                    <td>
+                        <div class="input-group input-group-sm">
+                            <select class="form-select" value.bind="user.pendingRole">
+                                <option model.bind="null"></option>
+                                <option repeat.for="role of roles" model.bind="role">${role}</option>
+                            </select>
+                        </div>
+                    </td>
+                    <td><font-awesome-icon if.bind="user.emailConfirmed === true" icon="check"></font-awesome-icon></td>
+                    <td><font-awesome-icon if.bind="user.lockoutEnabled === true" icon="check"></font-awesome-icon></td>
+                    <td><font-awesome-icon if.bind="user.isLockedOut === true" icon="check"></font-awesome-icon></td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="row mt-3">
+            <div class="col-lg-8">
+                <aut-pagination current-page.bind="currentPage"
+                                page-size.bind="pageSize"
+                                total-items.bind="totalItems"
+                                pagination-size.bind="5"
+                                boundary-links.bind="true"></aut-pagination>
+            </div>
+            <div class="col-lg-4">
+                <div class="form-inline d-inline-flex float-right">
+                    <div class="row">
+                        <div class="col-sm-7 mt-1">
+                            <label for="pageSize">Page Size:</label>
+                        </div>
+                        <div class="col-sm-5">
+                            <select value.bind="pageSize" id="pageSize" class="form-control">
+                                <option repeat.for="i of pageSizes" model.bind="i">${i}</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 mt-3">
+                <button type="button"
+                        class="btn btn-primary"
+                        click.trigger="saveRoles()"
+                        disabled.bind="!hasPendingRoleChanges()">
+                    Save Roles
+                </button>
+            </div>
+        </div>
+    </div>
+</template>

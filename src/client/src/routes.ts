@@ -1,13 +1,15 @@
-﻿import { ConfirmEmailPage } from "./account/confirm-email-page";
-import { LoginPage } from "./account/login-page";
-import { NotFound } from "./not-found";
-import { RegisterPage } from "./account/register-page";
-import { WelcomePage } from "./home/welcome-page";
+﻿import { ConfirmEmailPage } from "./account/confirm-email-page.js";
+import { AdminUserListPage } from "./account/admin-user-list-page.js";
+import { LoginPage } from "./account/login-page.js";
+import { NotFound } from "./not-found.js";
+import { RegisterPage } from "./account/register-page.js";
+import { WelcomePage } from "./home/welcome-page.js";
 import { CustomElement } from "aurelia";
-import { ProductListPage } from "./product/product-list-page";
-import { RequestPasswordResetPage } from "./account/request-password-reset-page";
-import { ResetPasswordPage } from "./account/reset-password-page";
-import { CreateUserDatabasePage } from "./account/create-user-database-page";
+import { ProductListPage } from "./product/product-list-page.js";
+import { RequestPasswordResetPage } from "./account/request-password-reset-page.js";
+import { ResendConfirmationEmailPage } from "./account/resend-confirmation-email-page.js";
+import { ResetPasswordPage } from "./account/reset-password-page.js";
+import { CreateUserDatabasePage } from "./account/create-user-database-page.js";
 
 export interface Route {
     id: string;
@@ -26,6 +28,13 @@ export const routes: Route[] = [
         path: 'about',
         component: CustomElement.define({ name: 'about-page', template: '<template><h1>About Page</h1></template>' }),
         title: 'About'
+    },
+    {
+        id: 'admin-user-list',
+        path: 'admin-user-list',
+        component: AdminUserListPage,
+        title: 'Admin User List',
+        data: { auth: 'Admin' }
     },
     {
         id: 'confirm-email',
@@ -61,7 +70,8 @@ export const routes: Route[] = [
         id: 'product-list',
         path: 'product-list',
         component: ProductListPage,
-        title: 'Product List'
+        title: 'Product List',
+        data: { auth: 'RegisteredUser' }
     },
     {
         id: 'not-found',
@@ -80,6 +90,12 @@ export const routes: Route[] = [
         path: 'request-password-reset',
         component: RequestPasswordResetPage,
         title: 'Request Password Reset'
+    },
+    {
+        id: 'resend-confirmation-email',
+        path: 'resend-confirmation-email',
+        component: ResendConfirmationEmailPage,
+        title: 'Resend Confirmation Email'
     },
     {
         id: 'reset-password',

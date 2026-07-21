@@ -1,6 +1,7 @@
 <template>
     <div class="container">
         <h1>Product List</h1>
+        <div if.bind="message" class="alert alert-info">${message}</div>
         <ul>
             <li repeat.for="product of products">
                 <strong>${product.name}</strong>: $${product.price}

@@ -28,6 +28,10 @@ export const menuDefinitions: MenuDefinition[] = [
         icon: 'fas fa-gears',
         children: [
             {
+                routeId: 'admin-user-list',
+                icon: 'fas fa-gear'
+            },
+            {
                 routeId: 'register',
                 icon: 'fas fa-address-card'
             },
