@@ -1,6 +1,5 @@
 import { existsSync, readFileSync } from 'fs';
 import aurelia from '@aurelia/vite-plugin';
-import babel from '@rolldown/plugin-babel';
 import { defineConfig } from 'vite';
 import { certFilePath, keyFilePath } from './aspnetcore-https.js';
 
@@ -49,11 +48,6 @@ export default defineConfig({
     plugins: [
         aurelia({
             useDev: true,
-        }),
-        babel({
-            plugins: [
-                ['@babel/plugin-proposal-decorators', { version: '2023-11' }]
-            ]
         }),
     ],
     publicDir: 'public'
