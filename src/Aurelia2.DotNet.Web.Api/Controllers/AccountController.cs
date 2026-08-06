@@ -19,6 +19,10 @@ namespace Aurelia2.DotNet.Web.Api.Controllers
     [ApiController]
     public class AccountController : ControllerBase
     {
+        private static readonly string[] InvalidRoleError = ["Invalid role."];
+        private static readonly string[] InvalidLoginAttemptError = ["Invalid login attempt."];
+        private static readonly string[] EmailConfirmationRequiredError = ["Email confirmation is required before signing in."];
+
         private readonly ApplicationDbContext context;
         private readonly SignInManager<IdentityUser> signInManager;
         private readonly UserManager<IdentityUser> userManager;
@@ -82,18 +86,19 @@ namespace Aurelia2.DotNet.Web.Api.Controllers
         [HttpGet("CurrentUser")]
         public async Task<IActionResult> CurrentUser()
         {
-            var isAuthenticated = User?.Identity?.IsAuthenticated ?? false;
+            var principal = User;
+            var isAuthenticated = principal?.Identity?.IsAuthenticated ?? false;
             var emailConfirmationEnabled = userManager.Options.SignIn.RequireConfirmedAccount;
             string? role = null;
 
-            if (isAuthenticated)
+            if (isAuthenticated && principal is not null)
             {
-                var user = await userManager.GetUserAsync(User);
+                var user = await userManager.GetUserAsync(principal);
                 if (user is not null)
                 {
                     var roles = await userManager.GetRolesAsync(user);
                     role = RoleExtensions.GetHighestRoleName(roles);
-                    var claimRole = RoleExtensions.GetHighestRoleName(User.FindAll(ClaimTypes.Role).Select(claim => claim.Value));
+                    var claimRole = RoleExtensions.GetHighestRoleName(principal.FindAll(ClaimTypes.Role).Select(claim => claim.Value));
 
                     if (NeedsSessionRepair(user, role))
                     {
@@ -198,7 +203,7 @@ namespace Aurelia2.DotNet.Web.Api.Controllers
         {
             if (!RoleExtensions.TryParseName(model.Role, out var role))
             {
-                return BadRequest(new[] { "Invalid role." });
+                return BadRequest(InvalidRoleError);
             }
 
             var user = await userManager.FindByIdAsync(userId);
@@ -292,8 +297,7 @@ namespace Aurelia2.DotNet.Web.Api.Controllers
                     var user = await userManager.FindByEmailAsync(model.Email);
                     if (user is null)
                     {
-                        var error = new[] { "Invalid login attempt." };
-                        return BadRequest(error);
+                        return BadRequest(InvalidLoginAttemptError);
                     }
 
                     if (logger.IsEnabled(LogLevel.Information))
@@ -319,7 +323,7 @@ namespace Aurelia2.DotNet.Web.Api.Controllers
                 }
                 if (result.IsNotAllowed)
                 {
-                    return BadRequest(new[] { "Email confirmation is required before signing in." });
+                    return BadRequest(EmailConfirmationRequiredError);
                 }
                 else
                 {
@@ -399,12 +403,12 @@ namespace Aurelia2.DotNet.Web.Api.Controllers
                     }
                 }
 
-                var existingRegistration = await TryHandleExistingUnconfirmedRegistrationAsync(model);
-                if (existingRegistration.handled)
+                var (handled, signedInUser) = await TryHandleExistingUnconfirmedRegistrationAsync(model);
+                if (handled)
                 {
-                    return existingRegistration.signedInUser is null
+                    return signedInUser is null
                         ? Ok(CreateCurrentUserResponse(false, null))
-                        : Ok(await CreateCurrentUserResponseAsync(existingRegistration.signedInUser));
+                        : Ok(await CreateCurrentUserResponseAsync(signedInUser));
                 }
 
                 AddIdentityErrors(result);
