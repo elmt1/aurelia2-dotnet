@@ -14,7 +14,7 @@
                         <li if.bind="canShow(menuItem)" 
                             class="nav-item" class.bind="menuItem.isActive ? 'active' : ''">
                             <a load.bind="'/' + menuItem.route.path" class="nav-link" click.trigger="setActive(menuItem)">
-                                <i class="${menuItem.icon}"></i>&nbsp;&nbsp;${menuItem.title || menuItem.route.title}
+                                <font-awesome-icon icon.bind="menuItem.icon"></font-awesome-icon>&nbsp;&nbsp;${menuItem.title || menuItem.route.title}
                             </a>
                         </li>
                     </template>
@@ -22,14 +22,14 @@
                     <template if.bind="menuItem.children && menuItem.children.length > 0">
                         <li class="nav-item dropdown" class.bind="menuItem.isActive ? 'active' : ''">
                             <a class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false" click.trigger="setActive(menuItem)">
-                                <i class="${menuItem.icon}"></i>&nbsp;&nbsp;${menuItem.title}
+                                <font-awesome-icon icon.bind="menuItem.icon"></font-awesome-icon>&nbsp;&nbsp;${menuItem.title}
                             </a>
                             <ul class="dropdown-menu">
                                 <template repeat.for="child of menuItem.children">
                                     <li if.bind="canShow(child)"
                                         class="nav-item" class.bind="child.isActive ? 'active' : ''">
                                         <a load.bind="'/' + child.route.path" class="dropdown-item" click.trigger="setActive(child)">
-                                            <i class="${child.icon}"></i>&nbsp;&nbsp;${child.title || child.route.title}
+                                            <font-awesome-icon icon.bind="child.icon"></font-awesome-icon>&nbsp;&nbsp;${child.title || child.route.title}
                                         </a>
                                     </li>
                                 </template>
@@ -41,12 +41,12 @@
             <ul class="navbar-nav ms-auto">
                 <li class="nav-item" if.bind="!accountService.authState.isAuthenticated">
                     <a class="nav-link" load="/login">
-                        <i class="fas fa-right-to-bracket"></i> Login
+                        <font-awesome-icon icon="right-to-bracket"></font-awesome-icon> Login
                     </a>
                 </li>
                 <li class="nav-item" if.bind="accountService.authState.isAuthenticated">
                     <a class="nav-link" click.trigger="logout()">
-                        <i class="fas fa-right-from-bracket"></i> Logout
+                        <font-awesome-icon icon="right-from-bracket"></font-awesome-icon> Logout
                     </a>
                 </li>
             </ul>

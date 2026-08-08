@@ -8,8 +8,6 @@
     $input-focus-border-color: #000000,
     $theme-colors: ( "primary": #2F4F4F, "secondary": #D3D3D3, "info": #6FA8DC, "danger": #E06666, "success": #93C47D, "dark": #444444 )
 );
-@use '@fortawesome/fontawesome-free/css/all' as *;
-
 .form-label {
     font-weight: 500;
 }

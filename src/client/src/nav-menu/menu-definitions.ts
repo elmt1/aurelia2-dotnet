@@ -16,36 +16,36 @@ export interface MenuDefinition {
 export const menuDefinitions: MenuDefinition[] = [
     {
         routeId: 'home',
-        icon: 'fas fa-house'
+        icon: 'house'
     },
     {
         routeId: 'product-list',
-        icon: 'fas fa-list'
+        icon: 'list'
     },
     {
         routeId: 'config',
         title: 'Configuration',
-        icon: 'fas fa-gears',
+        icon: 'gears',
         children: [
             {
                 routeId: 'admin-user-list',
-                icon: 'fas fa-gear'
+                icon: 'gear'
             },
             {
                 routeId: 'register',
-                icon: 'fas fa-address-card'
+                icon: 'address-card'
             },
             {
                 routeId: 'request-password-reset',
-                icon: 'fas fa-unlock'
+                icon: 'unlock'
             },
             {
                 routeId: 'create-user-database',
-                icon: 'fas fa-person-digging'
+                icon: 'person-digging'
             },
             {
                 routeId: 'about',
-                icon: 'fas fa-circle-info'
+                icon: 'circle-info'
             }
         ]
     }

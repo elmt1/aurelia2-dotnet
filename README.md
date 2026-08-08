@@ -207,10 +207,13 @@ Then copy `src\client\dist\*` into `<dir>\wwwroot`.
 
 ### Running published output
 
+From the publish output directory, run:
+
 ```
-set ASPNETCORE_URLS=https://localhost:5001
-dotnet <output-dir>\Aurelia2.DotNet.Web.Api.dll
+$env:ASPNETCORE_ENVIRONMENT = 'Production'; $env:ASPNETCORE_URLS = 'https://localhost:5001'; .\Aurelia2.DotNet.Web.Api.exe
 ```
+
+Then open `https://localhost:5001`. The `Production` environment enables the SPA fallback to `wwwroot/index.html`. In PowerShell, environment variables must use the `$env:` syntax; `set ASPNETCORE_URLS=...` is `cmd.exe` syntax and does not configure the published process correctly.
 
 ## Before Going to Production
 

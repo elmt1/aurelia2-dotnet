@@ -17,9 +17,9 @@
   "license": "UNLICENSED",
   "dependencies": {
     "@aurelia/router": "2.0.0-rc.2",
-    "@fortawesome/fontawesome-free": "^7.3.1",
     "@popperjs/core": "^2.11.8",
     "aurelia": "2.0.0-rc.2",
+    "aurelia2-fontawesome": "file:aurelia2-fontawesome-1.0.2.tgz",
     "aurelia2-table": "^0.1.0",
     "aurelia2-turnstile": "file:aurelia2-turnstile-1.0.2.tgz",
     "bootstrap": "^5.3.8"
